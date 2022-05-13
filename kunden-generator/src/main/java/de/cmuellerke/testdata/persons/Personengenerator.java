@@ -21,7 +21,8 @@ public class Personengenerator {
 			"Ulf", "Arnold", "Alfred", "Noah", "Finn", "Ben", "Benjamin", "Frederik", "Leon", "Elias", "Paul",
 			"Karsten", "Carsten", "Henry", "Bert", "Bertram", "Bertold", "Benedikt", "Friedemann", "Fritz", "Otto",
 			"Karl", "Gerold", "Jonas", "Yusuf", "Mohamed", "Mohammed", "Mario", "Kristian", "Hans-Peter", "Karl-Gustav",
-			"Gustav", "Stefan", "Stephan", "Moritz", "Max Moritz");
+			"Gustav", "Stefan", "Stephan", "Moritz", "Max Moritz", "Antonius", "Waldemar", "Norman", "Ivan", "Martin", 
+			"Marvin", "Carl", "Mike", "Friedhelm");
 	final static List<String> vornamenWeiblich = Arrays.asList("Gabi", "Birgit", "Pia", "Mia", "Conny", "Bibi", "Tanja",
 			"Julia", "Emma", "Maria", "Emily", "Paula", "Kerstin", "Steffi", "Anna", "Annalena", "Lena", "Birgit",
 			"Maxi", "Johanna", "Erna", "Sophia", "Lina", "Ella", "Clara", "Lea", "Mina", "Sabine", "Sina", "Silke",
@@ -34,7 +35,7 @@ public class Personengenerator {
 			"Schwarz", "Grünspecht", "Schmitz", "Schmidt", "Zimmermann", "Krüger", "Braun", "Schmitt", "Krause",
 			"Hartmann", "Lange", "Werner", "Köhler", "Huber", "Fuchs", "Blocksberg", "Scholz", "Kaiser", "Jung",
 			"Vogel", "Friedrich", "Günther", "Ginter", "Schubert", "Schuhmacher", "Roth", "Beck", "Lorenz", "Franke",
-			"Holzmann", "Simon", "Schuster", "Krause", "Otto");
+			"Holzmann", "Simon", "Schuster", "Krause", "Otto", "von der Schippe", "Plötzenich");
 
 	final static List<Stadt> staedte = Arrays.asList(//
 			new Stadt("Berlin", "12527"), //
