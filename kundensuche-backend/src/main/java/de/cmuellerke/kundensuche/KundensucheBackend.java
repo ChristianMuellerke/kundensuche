@@ -17,9 +17,9 @@ import de.cmuellerke.kundensuche.service.KundensucheService;
 import de.cmuellerke.kundensuche.testdaten.TestdatenProvider;
 
 @SpringBootApplication
-public class ElasticSpringDataApplication implements CommandLineRunner {
+public class KundensucheBackend implements CommandLineRunner {
 
-	private static Logger LOG = LoggerFactory.getLogger(ElasticSpringDataApplication.class);
+	private static Logger LOG = LoggerFactory.getLogger(KundensucheBackend.class);
 
 	@Autowired
 	KundensucheService kundensucheService;
@@ -28,7 +28,7 @@ public class ElasticSpringDataApplication implements CommandLineRunner {
 	TestdatenProvider testdatenProvider;
 
 	public static void main(String[] args) {
-		SpringApplication.run(ElasticSpringDataApplication.class, args);
+		SpringApplication.run(KundensucheBackend.class, args);
 	}
 
 	@Bean

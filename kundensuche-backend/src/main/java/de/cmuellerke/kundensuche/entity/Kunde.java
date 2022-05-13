@@ -1,13 +1,14 @@
 package de.cmuellerke.kundensuche.entity;
 
-import org.elasticsearch.common.Nullable;
+
+import org.elasticsearch.core.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.CompletionField;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
-import org.springframework.data.elasticsearch.core.completion.Completion;
+import org.springframework.data.elasticsearch.core.suggest.Completion;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
