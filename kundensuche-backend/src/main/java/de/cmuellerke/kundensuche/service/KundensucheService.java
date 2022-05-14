@@ -62,7 +62,7 @@ public class KundensucheService {
 
 //		Completion suggest = new Completion(tokens);
 
-		Completion suggest = new Completion(new String[] { kunde.getKurzname() });
+		Completion suggest = new Completion(new String[] { kunde.getKurzname(), kunde.getNachname(), kunde.getVorname() });
 
 		kunde.setSuggest(suggest);
 	}

@@ -12,6 +12,7 @@ import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
 import org.elasticsearch.search.suggest.SuggestionBuilder;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.data.elasticsearch.core.AbstractElasticsearchTemplate
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -95,6 +97,27 @@ public class SearchService {
 		});
 
 		return options.stream().map(option -> option.getText().toString()).collect(Collectors.toList());
+	}
+
+	public List<String> fetchSuggestionsForKurznameNeu(String kurzname) {
+		// TODO funktioniert noch nicht, soll das selbe machen wir die alte Methode
+		SuggestionBuilder kurznameSuggestion = new CompletionSuggestionBuilder("suggest")
+				.prefix(kurzname, Fuzziness.AUTO)//
+				;
+		
+		SuggestBuilder completionSuggestionBuilder = new SuggestBuilder()//
+				.addSuggestion("test_suggest", kurznameSuggestion)//
+				;
+		
+		NativeSearchQuery query = new NativeSearchQueryBuilder()//
+			.withSuggestBuilder(completionSuggestionBuilder ) //
+			.build();
+		
+		SearchHits<Kunde> searchHits = elasticsearchOperations.search(query, Kunde.class);
+		return searchHits.getSuggest().getSuggestion("test_suggest").getEntries().stream().map(e -> {
+			return e.getText();
+		}).collect(Collectors.toList());
+//		return searchHits.stream().map(sh -> sh.getContent().getKurzname()).collect(Collectors.toList());
 	}
 
 }

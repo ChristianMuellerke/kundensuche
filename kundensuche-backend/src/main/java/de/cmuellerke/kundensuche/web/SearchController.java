@@ -55,4 +55,9 @@ public class SearchController {
 		return searchService.fetchSuggestionsForKurzname(kurzname);
 	}
 
+	@GetMapping("/suggestKurznameNeu")
+	public List<String> suggestKurznameNeu(@RequestParam("kurzname") String kurzname) {
+		return searchService.fetchSuggestionsForKurznameNeu(kurzname);
+	}
+
 }

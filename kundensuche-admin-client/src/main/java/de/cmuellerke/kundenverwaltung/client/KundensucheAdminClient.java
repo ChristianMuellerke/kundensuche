@@ -1,6 +1,6 @@
 package de.cmuellerke.kundenverwaltung.client;
 
-public class Main {
+public class KundensucheAdminClient {
 
 	static final String LADE_ALLE_KUNDEN = "getKunden";
 	static final String BATCHIMPORT = "batchImport";
