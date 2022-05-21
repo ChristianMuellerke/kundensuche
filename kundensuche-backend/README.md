@@ -16,6 +16,12 @@ Ich versuche eine Kundensuche mit Elasticsearch zu bauen.
 
 * https://dzone.com/articles/introduction-to-spring-data-elasticsearch-41
 
+* http://localhost:9200/_cat/indices
+* http://localhost:8080/sayt?kurzname=Chri
+* https://coralogix.com/blog/elasticsearch-autocomplete-with-search-as-you-type/
+* https://www.elastic.co/guide/en/elasticsearch/reference/current/search-as-you-type.html
+* https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/#elasticsearch.mapping
+
 ## ELK starten
 
 Wir brauchen `docker` und `docker-compose`

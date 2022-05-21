@@ -22,11 +22,19 @@ import lombok.Setter;
 public class Kunde {
 
 	@Id
+	@Nullable
 	private String id;
 
 	@Field(type = FieldType.Text, name = "kurzname")
 	private String kurzname;
 
+	@Field(type = FieldType.Search_As_You_Type, name = "kurznameAYT")
+	private String kurznameForSAYT;
+
+	@Nullable
+	@Field(type = FieldType.Search_As_You_Type, maxShingleSize = 4) 
+	private String kurznameSAYT;
+	
 	@Nullable
 	@CompletionField(maxInputLength = 200)
 	private Completion suggest;

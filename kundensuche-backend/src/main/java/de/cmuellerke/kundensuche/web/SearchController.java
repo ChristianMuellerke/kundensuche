@@ -60,4 +60,9 @@ public class SearchController {
 		return searchService.fetchSuggestionsForKurznameNeu(kurzname);
 	}
 
+	@GetMapping("/sayt")
+	public List<String> searchAsYouType(@RequestParam("kurzname") String kurzname) {
+		return searchService.sayt(kurzname);
+	}
+
 }

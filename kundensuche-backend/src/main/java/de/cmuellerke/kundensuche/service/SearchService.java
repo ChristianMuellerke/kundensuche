@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.MultiMatchQueryBuilder;
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.suggest.SuggestBuilder;
 import org.elasticsearch.search.suggest.SuggestBuilders;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.AbstractElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
@@ -120,4 +123,28 @@ public class SearchService {
 //		return searchHits.stream().map(sh -> sh.getContent().getKurzname()).collect(Collectors.toList());
 	}
 
+	public List<String> sayt(String kurzname) {
+		
+		Query query = buildMultiMatchQuery(kurzname);
+		List<Kunde> kunden = elasticsearchOperations.search(query, Kunde.class) //
+				.getSearchHits() //
+				.stream() //
+				.map(SearchHit::getContent) //
+				.collect(Collectors.toList());
+		
+		LOGGER.debug("{} Kunden gefunden", kunden.size());
+		
+		kunden.forEach(kunde -> {
+			LOGGER.debug(kunde.getKurzname() + "/" + kunde.getKurznameSAYT());
+		});
+		
+		return new ArrayList<>();
+	}
+
+	protected Query buildMultiMatchQuery(String text) {
+		return new NativeSearchQuery(QueryBuilders.multiMatchQuery(text, //
+				"kurznameSAYT", "kurznameSAYT._2gram", "kurznameSAYT._3gram", "kurznameSAYT._4gram").type(MultiMatchQueryBuilder.Type.BOOL_PREFIX));
+	}
+
+	
 }

@@ -51,19 +51,10 @@ public class KundensucheService {
 
 	private void aufbereiten(Kunde kunde) {
 		LOGGER.debug("Kurzname = {}", kunde.getKurzname());
-//		String[] splitted = kunde.getKurzname().strip().split("\\s+");
-//
-//		List<String> tokenized = Arrays.asList(splitted);
-//		ArrayList<String> tokens = new ArrayList<>();
-//		tokens.addAll(tokenized);
-//		tokens.add(kunde.getKurzname());
-//
-//		tokens.forEach(t -> LOGGER.debug("Token = {}", t));
-
-//		Completion suggest = new Completion(tokens);
-
+		
 		Completion suggest = new Completion(new String[] { kunde.getKurzname(), kunde.getNachname(), kunde.getVorname() });
-
 		kunde.setSuggest(suggest);
+		kunde.setKurznameSAYT(kunde.getKurzname());
+		kunde.setKurznameForSAYT(kunde.getKurzname());
 	}
 }
