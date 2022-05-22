@@ -16,7 +16,24 @@
 	<description>Kundensuche Backend</description>
 	<properties>
 		<java.version>11</java.version>
+		<!-- version of the new ElasticsearchClient	-->
+		<elasticsearch-java>7.17.3</elasticsearch-java>
+		<testcontainers>1.16.2</testcontainers>
+		<mvn.unit-test.goal>test</mvn.unit-test.goal>
+		<mvn.integration-test-elasticsearch.goal>integration-test</mvn.integration-test-elasticsearch.goal>
 	</properties>
+	<developers>
+		<developer>
+			<id>cm</id>
+			<name>Christian Müllerke</name>
+			<email>extern at cmuellerke.de</email>
+			<roles>
+				<role>Developer</role>
+			</roles>
+			<timezone>+1</timezone>
+		</developer>
+	</developers>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -44,11 +61,45 @@
 			<version>1.5.9</version>
 		</dependency>
 
+		<!-- new Elasticsearch client, needs the low-level rest client and json api -->
+		<dependency>
+			<groupId>co.elastic.clients</groupId>
+			<artifactId>elasticsearch-java</artifactId>
+			<version>${elasticsearch-java}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-client</artifactId> <!-- is Apache 2 -->
+			<version>${elasticsearch-java}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Jackson JSON Mapper -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
-         
+
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -72,12 +123,46 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Test -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-to-slf4j</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.testcontainers</groupId>
 			<artifactId>elasticsearch</artifactId>
 			<version>1.16.0</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
@@ -85,6 +170,49 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<useSystemClassLoader>true</useSystemClassLoader>
+					<useFile>false</useFile>
+					<includes>
+						<include>**/*Tests.java</include>
+						<include>**/*Test.java</include>
+					</includes>
+					<systemPropertyVariables>
+						<es.set.netty.runtime.available.processors>false</es.set.netty.runtime.available.processors>
+					</systemPropertyVariables>
+				</configuration>
+				<executions>
+					<!-- the default-test execution runs only the unit tests -->
+					<execution>
+						<id>default-test</id>
+						<phase>${mvn.unit-test.goal}</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<excludedGroups>integration-test</excludedGroups>
+						</configuration>
+					</execution>
+					<!-- execution to run the integration tests against Elasticsearch -->
+					<execution>
+						<id>integration-test-elasticsearch</id>
+						<phase>${mvn.integration-test-elasticsearch.goal}</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<groups>integration-test</groups>
+							<systemPropertyVariables>
+								<sde.integration-test.environment>elasticsearch</sde.integration-test.environment>
+							</systemPropertyVariables>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -101,3 +101,10 @@ Achtung: Das kann durchaus Zeit in Anspruch nehmen
     java -jar ./target/kundenverwaltung-rest-client-0.0.1-SNAPSHOT.jar batchImport
 
 
+### Ideen
+
+* Suchen nach verschiedenen Attributen (in Kombination)
+* Wildcardsuche nach verschiedenen Attributen
+* Suggestions
+* Search-As-You-Type
+* 
