@@ -35,11 +35,15 @@ public class UserLogin {
 	}
 
 	public String authenticate() throws IOException, InterruptedException, URISyntaxException {
+		return authenticate("localhost", 8080);
+	}
+	
+	public String authenticate(String hostname, int port) throws IOException, InterruptedException, URISyntaxException {
 		Gson gson = new Gson();
 		String requestBody = gson.toJson(new JwtRequest(Testdata.DEFAULT_USER, Testdata.DEFAULT_PASSWORD, Testdata.DEFAULT_TENANT));
 		
 		HttpRequest request2 = HttpRequest.newBuilder()
-				  .uri(new URI("http://localhost:8080/authenticate"))
+				  .uri(new URI("http://" + hostname + ":" + port + "/authenticate"))
 				  .headers("Content-Type", "application/json;charset=UTF-8") //
 				  .headers("X-TENANT-ID", Testdata.DEFAULT_TENANT) //
 				  .POST(HttpRequest.BodyPublishers.ofString(requestBody)) //
@@ -53,8 +57,8 @@ public class UserLogin {
 			;
 		
 		if (response.statusCode() != 200) {
-			log.error("Unexpected HttpCode: {}", response.toString());
-			throw new IOException("Unexpected HTTP Response Code " + response.statusCode());
+			log.error("Unexpected HttpCode: {}\n{}", response.statusCode(), response.body());
+			throw new IOException("Unexpected HTTP Response Code " + response.statusCode() + "\n" + response.body());
 		}
 		
 		String responseBody = response.body();

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import de.cmuellerke.demo.service.UserNotFoundException;
 import de.cmuellerke.demo.service.UserService;
+import de.cmuellerke.demo.tenancy.TenantContext;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -36,6 +37,8 @@ public class JwtAuthenticationController {
 	@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
+		TenantContext.setTenantId(authenticationRequest.getTenantId());
+		
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
 		try {

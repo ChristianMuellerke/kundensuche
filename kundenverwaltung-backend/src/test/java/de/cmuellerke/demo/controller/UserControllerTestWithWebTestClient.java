@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -20,6 +21,7 @@ import de.cmuellerke.demo.data.dto.UserDTO;
 import de.cmuellerke.demo.service.UserService;
 
 @WebIntegrationTest
+@Disabled
 public class UserControllerTestWithWebTestClient {
 
 	private static final String PASSWORD = "xxx xxx xxx xxx";

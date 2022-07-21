@@ -32,7 +32,7 @@ public abstract class AbstractBaseEntity implements TenantAware, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Size(max = 30)
-	@Column(name = "tenant_id")
+	@Column(name = "tenant_id", nullable = false)
 	private String tenantId;
 
 	public AbstractBaseEntity(String tenantId) {

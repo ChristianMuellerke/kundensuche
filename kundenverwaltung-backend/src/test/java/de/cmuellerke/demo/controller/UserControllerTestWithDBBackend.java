@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -18,6 +19,7 @@ import de.cmuellerke.demo.data.dto.UserDTO;
 import de.cmuellerke.demo.service.UserService;
 
 @WebIntegrationTest
+@Disabled
 public class UserControllerTestWithDBBackend {
 
 	private static final String PASSWORD = "xxx xxx xxx xxx";

@@ -9,5 +9,5 @@ import de.cmuellerke.demo.data.entity.UserDAO;
 
 public interface UserRepository extends JpaRepository<UserDAO, Long> {
 	
-	Optional<UserDAO> findByUserName(String userName);
+	Optional<UserDAO> findByUserNameAndTenantId(String userName, String tenantId);
 }

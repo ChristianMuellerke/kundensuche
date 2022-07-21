@@ -2,6 +2,9 @@ package de.cmuellerke.demo.security;
 
 import java.io.Serializable;
 
+import lombok.Builder;
+
+@Builder
 public class JwtRequest implements Serializable {
 	/**
 	 * 

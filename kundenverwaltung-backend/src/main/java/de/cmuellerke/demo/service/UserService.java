@@ -14,9 +14,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import de.cmuellerke.demo.data.dto.ApplicationUser;
 import de.cmuellerke.demo.data.dto.UserDTO;
 import de.cmuellerke.demo.data.entity.UserDAO;
 import de.cmuellerke.demo.repository.UserRepository;
+import de.cmuellerke.demo.tenancy.TenantContext;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -47,28 +49,33 @@ public class UserService implements org.springframework.security.core.userdetail
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		/*
-		 * TODO: Das hier weitermachen
-		 */
+		log.debug("TenantId = {}", getTenantId());
+		
 		if ("javainuse".equals(username)) {
 			log.debug("Testuser is used, thats not ok");
-			return new User("javainuse", "$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6",
+			ApplicationUser user = new ApplicationUser("javainuse", "$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6", getTenantId(),
 					new ArrayList<>());
+			return user;
 		} else {
 			log.debug("loading user {} from db", username);
-			Optional<UserDAO> userFromDB = userRepository.findByUserName(username);
+			Optional<UserDAO> userFromDB = userRepository.findByUserNameAndTenantId(username, getTenantId());
 			
 			return userFromDB.map(user -> {
-				return new User(user.getUserName(), user.getPassword(), new ArrayList<>());
+				return new ApplicationUser(user.getUserName(), user.getPassword(), user.getTenantId(), new ArrayList<>());
 			})
 			.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 		}
+	}
+
+	private String getTenantId() {
+		return TenantContext.getTenantId();
 	}
 
 	public UserDTO save(UserDTO user) {
 		UserDAO newUser = new UserDAO();
 		newUser.setUserName(user.getUserName());
 		newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
+		newUser.setTenantId(user.getTenant());
 		UserDAO savedUser = userRepository.save(newUser);
 		return convertToDto(savedUser);
 	}

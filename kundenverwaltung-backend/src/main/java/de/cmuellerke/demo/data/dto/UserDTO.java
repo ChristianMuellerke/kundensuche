@@ -22,4 +22,6 @@ public class UserDTO {
 	@NotBlank(message = "Password muss gesetzt sein.")
 	@Size(min = 12, max = 100, message = "Password muss zwischen 12 und 100 Zeichen lang sein")
 	String password;
+	
+	String tenant;
 }
