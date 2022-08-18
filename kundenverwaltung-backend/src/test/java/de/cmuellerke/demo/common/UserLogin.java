@@ -27,25 +27,29 @@ public class UserLogin {
 	public static void main(String[] args) {
 		try {
 			UserLogin userLogin = new UserLogin();
-			String token = userLogin.authenticate();
+			String token = authenticate();
 			System.out.println("Token: " + token);
 		} catch (Exception e) {
 			log.error("Error!", e);
 		}
 	}
 
-	public String authenticate() throws IOException, InterruptedException, URISyntaxException {
+	public static String getToken() throws IOException, InterruptedException, URISyntaxException {
+		return "Bearer " + authenticate();
+	}
+	
+	public static String authenticate() throws IOException, InterruptedException, URISyntaxException {
 		return authenticate("localhost", 8080);
 	}
 	
-	public String authenticate(String hostname, int port) throws IOException, InterruptedException, URISyntaxException {
+	public static String authenticate(String hostname, int port) throws IOException, InterruptedException, URISyntaxException {
 		Gson gson = new Gson();
 		String requestBody = gson.toJson(new JwtRequest(Testdata.DEFAULT_USER, Testdata.DEFAULT_PASSWORD, Testdata.DEFAULT_TENANT));
 		
 		HttpRequest request2 = HttpRequest.newBuilder()
 				  .uri(new URI("http://" + hostname + ":" + port + "/authenticate"))
 				  .headers("Content-Type", "application/json;charset=UTF-8") //
-				  .headers("X-TENANT-ID", Testdata.DEFAULT_TENANT) //
+//				  .headers("X-TENANT-ID", Testdata.DEFAULT_TENANT) //
 				  .POST(HttpRequest.BodyPublishers.ofString(requestBody)) //
 				  .timeout(Duration.ofSeconds(5)) //
 				  .build();

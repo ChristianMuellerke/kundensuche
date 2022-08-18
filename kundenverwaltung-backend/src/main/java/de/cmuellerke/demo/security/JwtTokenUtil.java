@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.springframework.stereotype.Component;
 
+import de.cmuellerke.demo.data.dto.ApplicationUser;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,6 +43,12 @@ public class JwtTokenUtil implements Serializable{
 		return getClaimFromToken(token, Claims::getSubject);
 	}
 
+	public String getTenantIdFromToken(String jwtToken) {
+		Claims claims = getAllClaimsFromToken(jwtToken);
+		return getClaimFromToken(jwtToken, (c) -> c.get("tenant", String.class));
+//		return getClaimFromToken(jwtToken, Claims::get);
+	}
+	
 	//retrieve expiration date from jwt token
 	public Date getExpirationDateFromToken(String token) {
 		return getClaimFromToken(token, Claims::getExpiration);
@@ -62,8 +70,9 @@ public class JwtTokenUtil implements Serializable{
 	}
 
 	//generate token for user
-	public String generateToken(UserDetails userDetails) {
+	public String generateToken(ApplicationUser userDetails) {
 		Map<String, Object> claims = new HashMap<>();
+		claims.put("tenant", userDetails.getTenant());
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
 
@@ -84,4 +93,5 @@ public class JwtTokenUtil implements Serializable{
 		final String username = getUsernameFromToken(token);
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
+
 }

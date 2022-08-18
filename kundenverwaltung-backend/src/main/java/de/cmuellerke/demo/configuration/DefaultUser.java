@@ -24,9 +24,14 @@ public class DefaultUser implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		TenantContext.setTenantId("0000");
-		log.debug("inserting initial user");
+		log.debug("inserting initial user to tenant 0000");
 		UserDTO defaultUser = UserDTO.builder().userName("default").password("default").build();
 		userService.save(defaultUser);
+
+		TenantContext.setTenantId("0001");
+		log.debug("inserting initial user to tenant 0001");
+		UserDTO defaultUser2 = UserDTO.builder().userName("default2").password("default").build();
+		userService.save(defaultUser2);
 	}
 
 }

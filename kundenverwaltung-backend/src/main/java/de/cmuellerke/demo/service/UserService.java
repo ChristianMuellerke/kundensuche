@@ -33,10 +33,6 @@ public class UserService implements org.springframework.security.core.userdetail
 	@Autowired
 	private ModelMapper modelMapper;
 
-//	public UserDTO create(UserDTO user) {
-//		return convertToDto(userRepository.save(convertToEntity(user)));
-//	}
-
 	public UserDTO update(Long id, UserDTO user) {
 		UserDAO userFromRepo = userRepository.getById(id);
 		modelMapper.map(user, userFromRepo);
@@ -48,7 +44,7 @@ public class UserService implements org.springframework.security.core.userdetail
 	}
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public ApplicationUser loadUserByUsername(String username) throws UsernameNotFoundException {
 		log.debug("TenantId = {}", getTenantId());
 		
 		if ("javainuse".equals(username)) {
@@ -63,7 +59,7 @@ public class UserService implements org.springframework.security.core.userdetail
 			return userFromDB.map(user -> {
 				return new ApplicationUser(user.getUserName(), user.getPassword(), user.getTenantId(), new ArrayList<>());
 			})
-			.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+			.orElseThrow(() -> new UsernameNotFoundException("[" + getTenantId() + "] User " + username + " not found."));
 		}
 	}
 

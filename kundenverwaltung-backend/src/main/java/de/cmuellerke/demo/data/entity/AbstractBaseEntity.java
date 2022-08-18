@@ -31,13 +31,14 @@ import lombok.Setter;
 public abstract class AbstractBaseEntity implements TenantAware, Serializable {
 	private static final long serialVersionUID = 1L;
 
+	public AbstractBaseEntity(String tenantId) {
+		this.tenantId = tenantId;
+	}
+
 	@Size(max = 30)
 	@Column(name = "tenant_id", nullable = false)
 	private String tenantId;
 
-	public AbstractBaseEntity(String tenantId) {
-		this.tenantId = tenantId;
-	}
 
 	@CreatedDate
 	@Column(name = "DATE_CREATED", nullable = false, updatable = false)

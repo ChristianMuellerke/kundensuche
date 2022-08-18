@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import de.cmuellerke.demo.service.UserService;
+import de.cmuellerke.demo.tenancy.TenantContext;
 import io.jsonwebtoken.ExpiredJwtException;
 
 @Component
@@ -40,6 +41,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 			jwtToken = requestTokenHeader.substring(7);
 			try {
 				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+				String tenantId = jwtTokenUtil.getTenantIdFromToken(jwtToken);
+				logger.debug("TenantId=" + tenantId);
+				TenantContext.setTenantId(tenantId);
 			} catch (IllegalArgumentException e) {
 				System.out.println("Unable to get JWT Token");
 			} catch (ExpiredJwtException e) {

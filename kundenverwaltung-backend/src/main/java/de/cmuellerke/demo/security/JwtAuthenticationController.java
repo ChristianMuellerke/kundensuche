@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import de.cmuellerke.demo.data.dto.ApplicationUser;
 import de.cmuellerke.demo.service.UserNotFoundException;
 import de.cmuellerke.demo.service.UserService;
 import de.cmuellerke.demo.tenancy.TenantContext;
@@ -42,7 +43,7 @@ public class JwtAuthenticationController {
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
 		try {
-			final UserDetails userDetails = userDetailsService
+			final ApplicationUser userDetails = userDetailsService
 					.loadUserByUsername(authenticationRequest.getUsername());
 			
 			final String token = jwtTokenUtil.generateToken(userDetails);

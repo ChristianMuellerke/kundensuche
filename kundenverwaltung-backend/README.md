@@ -21,7 +21,11 @@ Prozess: Bevor jemand einen REST-Endpunkt rufen kann, muss er sich ein UserToken
 
 ### Letzter Stand
 
-Damit wir Benutzer nicht nur mit Username und Password identifizieren, sondern auch mit einem Tenant, müssen wir eine eigene Implementierung von org.springframework.security.core.userdetails.User (eine Ableitung dieser Klasse?) erschaffen, in der man auch den Tenant transportieren kann. Statt dann den Tenant im HttpHeader zu transportieren, können wir uns den zur Laufzeit dann aus dem Token jeweils holen.
+*Done*: Damit wir Benutzer nicht nur mit Username und Password identifizieren, sondern auch mit einem Tenant, müssen wir eine eigene Implementierung von org.springframework.security.core.userdetails.User (eine Ableitung dieser Klasse?) erschaffen, in der man auch den Tenant transportieren kann. Statt dann den Tenant im HttpHeader zu transportieren, können wir uns den zur Laufzeit dann aus dem Token jeweils holen.
+
+*Next*: https://stackoverflow.com/questions/66278129/mocking-jwt-token-in-springboottest-with-webtestclient
+
+Der de.cmuellerke.demo.controller.UserControllerIntegrationTest muss so gebaut werden, dass der WebTestClient einen MockUser verwendet. Wahrscheinlich macht es Sinn, den Test zu teilen. (12.08.2022)
 
 ### Ziele
 

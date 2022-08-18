@@ -29,11 +29,12 @@ import lombok.Setter;
 public class Customer extends AbstractBaseEntity {
 
 	@Builder
-	public Customer(Long id, String firstName, String lastName, String tenantId) {
+	public Customer(Long id, String firstName, String lastName, String tenantId, Set<Adress> adresses) {
 		super(tenantId);
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.adresses = adresses;
 	}
 
 	@Id
