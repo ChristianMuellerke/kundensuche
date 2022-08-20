@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class UserService implements org.springframework.security.core.userdetails.UserDetailsService {
+public class UserService {
 	@Autowired
 	UserRepository userRepository;
 
@@ -34,37 +34,13 @@ public class UserService implements org.springframework.security.core.userdetail
 	private ModelMapper modelMapper;
 
 	public UserDTO update(Long id, UserDTO user) {
-		UserDAO userFromRepo = userRepository.getById(id);
+		UserDAO userFromRepo = userRepository.getReferenceById(id);
 		modelMapper.map(user, userFromRepo);
 		return convertToDto(userRepository.save(userFromRepo));
 	}
 
 	public void delete(Long userId) {
 		userRepository.deleteById(userId);
-	}
-
-	@Override
-	public ApplicationUser loadUserByUsername(String username) throws UsernameNotFoundException {
-		log.debug("TenantId = {}", getTenantId());
-		
-		if ("javainuse".equals(username)) {
-			log.debug("Testuser is used, thats not ok");
-			ApplicationUser user = new ApplicationUser("javainuse", "$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6", getTenantId(),
-					new ArrayList<>());
-			return user;
-		} else {
-			log.debug("loading user {} from db", username);
-			Optional<UserDAO> userFromDB = userRepository.findByUserNameAndTenantId(username, getTenantId());
-			
-			return userFromDB.map(user -> {
-				return new ApplicationUser(user.getUserName(), user.getPassword(), user.getTenantId(), new ArrayList<>());
-			})
-			.orElseThrow(() -> new UsernameNotFoundException("[" + getTenantId() + "] User " + username + " not found."));
-		}
-	}
-
-	private String getTenantId() {
-		return TenantContext.getTenantId();
 	}
 
 	public UserDTO save(UserDTO user) {

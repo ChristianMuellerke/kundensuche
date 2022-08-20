@@ -27,6 +27,15 @@ Prozess: Bevor jemand einen REST-Endpunkt rufen kann, muss er sich ein UserToken
 
 Der de.cmuellerke.demo.controller.UserControllerIntegrationTest muss so gebaut werden, dass der WebTestClient einen MockUser verwendet. Wahrscheinlich macht es Sinn, den Test zu teilen. (12.08.2022)
 
+*Next*:
+- Switch nach Spring Boot 2.7.2 war ein ziemlicher Flop, jetzt geht gar nix mehr (Circular Dependencies etc).
+- Wir fangen nochmal von vorne an: Die Spring jwt Sample Anwendung nochmal als Basis nehmen und dann die MultiTenancy darauf adaptieren. Und danach bauen wir noch eine UI für den Login.
+- siehe auch 
+-- https://github.com/bezkoder/spring-boot-spring-security-jwt-authentication
+-- https://www.bezkoder.com/angular-12-spring-boot-jwt-auth/
+
+
+
 *Next*: 
 - UserManagementTests ausbauen
 - Customer Management bauen
