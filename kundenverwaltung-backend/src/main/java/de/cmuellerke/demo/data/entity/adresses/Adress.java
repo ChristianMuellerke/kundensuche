@@ -18,21 +18,21 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "ADRESSES")
-@Builder
+//@Builder
 @Getter
 @Setter
 @NoArgsConstructor
 public class Adress extends AbstractBaseEntity {
 
-	@Builder
-	public Adress(Long id, AdressType type, String city, String street, String postalcode, String tenantId) {
-		super(tenantId);
-		this.id = id;
-		this.type = type;
-		this.city = city;
-		this.street = street;
-		this.postalcode = postalcode;
-	}
+//	public Adress(Long id, AdressType type, String city, String street, String postalcode, String tenantId) {
+//		super(tenantId);
+//		this.id = id;
+//		this.type = type;
+//		this.city = city;
+//		this.street = street;
+//		this.postalcode = postalcode;
+//		this.setTenantId(tenantId);
+//	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

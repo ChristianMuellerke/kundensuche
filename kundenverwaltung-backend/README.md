@@ -23,9 +23,19 @@ Prozess: Bevor jemand einen REST-Endpunkt rufen kann, muss er sich ein UserToken
 
 *Done*: Damit wir Benutzer nicht nur mit Username und Password identifizieren, sondern auch mit einem Tenant, müssen wir eine eigene Implementierung von org.springframework.security.core.userdetails.User (eine Ableitung dieser Klasse?) erschaffen, in der man auch den Tenant transportieren kann. Statt dann den Tenant im HttpHeader zu transportieren, können wir uns den zur Laufzeit dann aus dem Token jeweils holen.
 
-*Next*: https://stackoverflow.com/questions/66278129/mocking-jwt-token-in-springboottest-with-webtestclient
+*Done*: https://stackoverflow.com/questions/66278129/mocking-jwt-token-in-springboottest-with-webtestclient
 
 Der de.cmuellerke.demo.controller.UserControllerIntegrationTest muss so gebaut werden, dass der WebTestClient einen MockUser verwendet. Wahrscheinlich macht es Sinn, den Test zu teilen. (12.08.2022)
+
+*Next*: 
+- UserManagementTests ausbauen
+- Customer Management bauen
+- UI bauen: Login mit User, Tenant und Passwort und danach irgendwas fachliches zur Anzeige bringen -> UserManagement
+- Bulk Import von Testkundendaten
+- Trigger via Kafka einbauen für Kundendaten (Customer): Neu, Änderung, Löschung, Neuaufsetzen ebenso
+- Consumerseite bauen:
+-- eine Seite soll einmal ElasticSearch sein
+-- eine andere Seite soll eine Suche mit Hibernate Search 6.x sein - Datenbank soll dann In-Memory sein
 
 ### Ziele
 

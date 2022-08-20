@@ -25,17 +25,16 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-@NoArgsConstructor
+//@NoArgsConstructor
 public class Customer extends AbstractBaseEntity {
 
-	@Builder
-	public Customer(Long id, String firstName, String lastName, String tenantId, Set<Adress> adresses) {
-		super(tenantId);
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.adresses = adresses;
-	}
+//	public Customer(Long id, String firstName, String lastName, String tenantId, Set<Adress> adresses) {
+//		super(tenantId);
+//		this.id = id;
+//		this.firstName = firstName;
+//		this.lastName = lastName;
+//		this.adresses = adresses;
+//	}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

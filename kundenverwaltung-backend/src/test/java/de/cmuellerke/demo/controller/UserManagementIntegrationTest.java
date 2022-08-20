@@ -63,6 +63,21 @@ public class UserManagementIntegrationTest implements WithAssertions {
 		assertThat(createdUser.getUserName()).isEqualTo(newUser.getUserName());
 	}
 
+	private UserDTO createUser(UserDTO user, String jwt) {
+		return this.webTestClient//
+				.put()//
+				.uri(USERS_CREATE)//
+				.header(AUTHORIZATION_HEADER, jwt)
+				.body(BodyInserters.fromValue(user))//
+				.accept(MediaType.APPLICATION_JSON)//
+				.exchange()//
+				.expectStatus().isOk() //
+				.expectBody(UserDTO.class)//
+				.returnResult()//
+				.getResponseBody();
+	}
+
+	
 //	@Test
 //	@Disabled
 //	public void shouldNotCreateUserWhichHasNoPassword() throws Exception {
@@ -99,20 +114,6 @@ public class UserManagementIntegrationTest implements WithAssertions {
 //
 //		assertThat(updatedUser.getUserName()).isEqualTo("changedUserName");
 //	}
-
-	private UserDTO createUser(UserDTO user, String jwt) {
-		return this.webTestClient//
-				.put()//
-				.uri(USERS_CREATE)//
-				.header(AUTHORIZATION_HEADER, jwt)
-				.body(BodyInserters.fromValue(user))//
-				.accept(MediaType.APPLICATION_JSON)//
-				.exchange()//
-				.expectStatus().isOk() //
-				.expectBody(UserDTO.class)//
-				.returnResult()//
-				.getResponseBody();
-	}
 
 //	private UserDTO updateUser(UserDTO user, String jwt) {
 //		return this.webTestClient//
