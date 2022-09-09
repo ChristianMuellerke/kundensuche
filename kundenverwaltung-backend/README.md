@@ -1,4 +1,13 @@
+### Neu
 
+Ich habe die Anwendung nochmal neu aufgesetzt, diesmal erstmal mit dem Ziel des Usermanagements.
+Danach fehlt alles wieder was wir vorher hatten: Multi-Tenancy, aber auch die Kundenobjekte habe 
+ich nicht mehr.
+
+Zuletzt hatte ich Probleme noch die User anzulegen, der hatte die Rollen nicht in der Datenbank
+und ich vermute die muss man selber dort erst anlegen.
+
+### Verworfen
 Es fehlt:
 - Momentan kann man auch ohne Tenant was machen, aber das müssten wir abfangen
 - Man sollte auch nur mit einem in der Tabelle Tenants bestehenden Tenant was machen dürfen. Das müssten wir abfangen
