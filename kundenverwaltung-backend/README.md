@@ -1,10 +1,26 @@
-### Neu
+### Als nächstes
 
-Ich habe die Anwendung nochmal neu aufgesetzt, diesmal erstmal mit dem Ziel des Usermanagements.
+* UserInterface dazu bauen: Eine Angular-UI, die SignIn, Login, Refresh kann
+  * Nach dem Login landet man in einer Übersicht über alle User
+  * Wir haben eine Seite die Informationen zum aktuellen Login liefert
+
+* Refactor nach den Funktionen (oder festlegen, dass es schon so passt)
+  * Security/ UserManagement
+  * MultiTenancy
+  * Fachanwendung
+  
+### Erledigt
+
+* (26.10.2022) Aktuell prüfen die Unittests aber nur für einen Tenant und ich bin auch nicht dazu gekommen mir die Datenbankinhalte nach jeder Aktion anzuschauen.
+* (21.10.2022) Renew UserToken
+  * https://www.bezkoder.com/spring-boot-refresh-token-jwt/
+  * mir scheint hier noch ein Test davon zu fehlen, keine Ahnung wie man das macht
+
+* Ich habe die Anwendung nochmal neu aufgesetzt, diesmal erstmal mit dem Ziel des Usermanagements.
 Danach fehlt alles wieder was wir vorher hatten: Multi-Tenancy, aber auch die Kundenobjekte habe 
 ich nicht mehr.
 
-Zuletzt hatte ich Probleme noch die User anzulegen, der hatte die Rollen nicht in der Datenbank
+* Zuletzt hatte ich Probleme noch die User anzulegen, der hatte die Rollen nicht in der Datenbank
 und ich vermute die muss man selber dort erst anlegen.
 
 ### Verworfen

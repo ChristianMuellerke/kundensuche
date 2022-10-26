@@ -1,5 +1,8 @@
 package de.cmuellerke.kundenverwaltung.models;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,9 +21,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "users", uniqueConstraints = { @UniqueConstraint(columnNames = "username"),
-		@UniqueConstraint(columnNames = "email") })
-public class User {
+@Table(name = "users", uniqueConstraints = { 
+		@UniqueConstraint(columnNames = { "tenant_id", "username"}),
+		@UniqueConstraint(columnNames = { "tenant_id", "email"}) 
+		})
+public class User extends AbstractBaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -45,10 +50,11 @@ public class User {
 	public User() {
 	}
 
-	public User(String username, String email, String password) {
+	public User(String username, String email, String password, LocalDateTime dateCreated) {
 		this.username = username;
 		this.email = email;
 		this.password = password;
+		super.setCreatedDate(dateCreated);
 	}
 
 	public Long getId() {

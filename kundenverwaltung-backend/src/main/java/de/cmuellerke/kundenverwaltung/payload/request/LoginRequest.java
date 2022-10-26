@@ -1,7 +1,21 @@
 package de.cmuellerke.kundenverwaltung.payload.request;
 
+import java.util.List;
+
 import javax.validation.constraints.NotBlank;
 
+import de.cmuellerke.kundenverwaltung.payload.response.JwtResponse;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class LoginRequest {
 	@NotBlank
 	private String username;
@@ -9,19 +23,6 @@ public class LoginRequest {
 	@NotBlank
 	private String password;
 
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
+	@NotBlank
+	private String tenantId;
 }

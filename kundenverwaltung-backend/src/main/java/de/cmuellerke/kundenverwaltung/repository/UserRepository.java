@@ -9,9 +9,9 @@ import de.cmuellerke.kundenverwaltung.models.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-	Optional<User> findByUsername(String username);
+	Optional<User> findByUsernameAndTenantId(String username, String tenantId);
 
-	Boolean existsByUsername(String username);
+	Boolean existsByUsernameAndTenantId(String username, String tenantId);
 
 	Boolean existsByEmail(String email);
 }

@@ -1,4 +1,4 @@
-package de.cmuellerke.kundenverwaltung.payload.response;
+package de.cmuellerke.kundenverwaltung.payload;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +11,6 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageResponse {
+public class MessageResponse{
 	private String message;
 }

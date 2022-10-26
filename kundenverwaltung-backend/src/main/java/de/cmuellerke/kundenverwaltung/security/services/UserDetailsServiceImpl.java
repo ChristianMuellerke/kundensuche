@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import de.cmuellerke.kundenverwaltung.models.User;
 import de.cmuellerke.kundenverwaltung.repository.UserRepository;
+import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -19,7 +20,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		User user = userRepository.findByUsername(username)
+		String tenantId = TenantContext.getTenantId();
+		
+		User user = userRepository.findByUsernameAndTenantId(username, tenantId)
 				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
 
 		return UserDetailsImpl.build(user);
