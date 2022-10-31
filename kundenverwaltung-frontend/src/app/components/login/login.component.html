@@ -1,14 +1,8 @@
-<p>Login</p>
-<div class="row">
-	<div class="col">
-		<div ngbDropdown class="d-inline-block">
-			<button type="button" class="btn btn-outline-primary"
-				id="dropdownBasic1" ngbDropdownToggle>Toggle dropdown</button>
-			<div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-				<button ngbDropdownItem>Action - 1</button>
-				<button ngbDropdownItem>Another Action</button>
-				<button ngbDropdownItem>Something else is here</button>
-			</div>
-		</div>
-	</div>
-</div>
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Tenant auswählen
+    </button>
+    <ul class="dropdown-menu">
+        <li *ngFor="let tenant of tenants"><a class="dropdown-item" [routerLink]="['/login', tenant.id]">{{tenant.name}}</a></li>
+    </ul>
+ </div>
