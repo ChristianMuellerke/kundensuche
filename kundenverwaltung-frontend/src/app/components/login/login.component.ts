@@ -27,6 +27,9 @@ export class LoginComponent implements OnInit {
       Hier war ich stehengeblieben:
       * https://angular.io/guide/router-tutorial-toh
       * https://angular.io/tutorial/toh-pt3
+      * 
+      * 
+      Damit das Beispiel funktioniert, muss ich doch schon mal einen Service für die Tenants realisieren?
     */
 
   ngOnInit() {
