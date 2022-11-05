@@ -1,6 +1,0 @@
-2022/11/05-09:38:36.024 3 Reusing MANIFEST /home/cm/develop/kundensuche/kundenverwaltung-frontend/"/home/cm/develop/kundensuche/kundenverwaltung-frontend/DevProfile"/Default/Local Storage/leveldb/MANIFEST-000001
-2022/11/05-09:38:36.025 3 Recovering log #3
-2022/11/05-09:38:36.026 3 Reusing old log /home/cm/develop/kundensuche/kundenverwaltung-frontend/"/home/cm/develop/kundensuche/kundenverwaltung-frontend/DevProfile"/Default/Local Storage/leveldb/000003.log 
-2022/11/05-11:20:50.828 a Level-0 table #5: started
-2022/11/05-11:20:50.863 a Level-0 table #5: 36735 bytes OK
-2022/11/05-11:20:50.875 a Delete type=0 #3
