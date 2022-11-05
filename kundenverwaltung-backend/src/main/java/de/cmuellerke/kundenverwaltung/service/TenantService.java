@@ -28,4 +28,11 @@ public class TenantService {
 			return tenantDTO;
 		}).collect(Collectors.toList());
 	}
+
+	public TenantDTO getTenant(Long id) {
+		Tenant tenant = tenantRepository.getReferenceById(id);
+		TenantDTO tenantDTO = new TenantDTO();
+		modelMapper.map(tenant, tenantDTO);
+		return tenantDTO;
+	}
 }

@@ -83,3 +83,6 @@ https://medium.com/swlh/multi-tenancy-implementation-using-spring-boot-hibernate
 https://callistaenterprise.se/blogg/teknik/2020/10/17/multi-tenancy-with-spring-boot-part5/
 https://github.com/callistaenterprise/blog-multitenancy/tree/shared_database_hibernate
 
+### Links
+
+* https://medium.com/@majdasab/integrating-an-angular-project-with-spring-boot-e3a043b7307b
