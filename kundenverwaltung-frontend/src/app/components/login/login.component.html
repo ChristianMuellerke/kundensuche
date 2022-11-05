@@ -1,8 +1,36 @@
-<div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-      Tenant auswählen
-    </button>
-    <ul class="dropdown-menu">
-        <li *ngFor="let tenant of tenants"><a class="dropdown-item" [routerLink]="['/login', tenant.id]">{{tenant.name}}</a></li>
-    </ul>
- </div>
+<div class="card mx-auto" style="width: 18rem;margin-top: 150px;">
+  <div class="card-header">
+    Login
+  </div>
+  <div class="card-body">
+    <p class="card-text">Um auf die Anwendung zuzugreifen müssen Sie sich einloggen</p>
+
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{selectedTenant?.name}}
+      </button>
+      <ul class="dropdown-menu">
+          <li *ngFor="let tenant of tenants"><a class="dropdown-item" [routerLink]="['/login', tenant.id]">{{tenant.name}}</a></li>
+      </ul>
+   </div>
+   <p></p>
+  <div>
+    <form>
+     <div class="form-group">
+       <label for="name">Username</label>
+       <input type="text" class="form-control" id="name" aria-describedby="nameHelp" placeholder="Enter Username" [formControl]="name">
+       <small id="nameHelp" class="form-text text-muted">You have to provide a username.</small>
+     </div>
+     <div class="form-group">
+       <label for="password">Password</label>
+       <input type="password" class="form-control" id="password" placeholder="Password" [formControl]="password">
+     </div>
+     <button type="submit" class="btn btn-primary" (click)="login()">Login</button>
+   </form>
+  
+  </div>
+</div>
+
+
+</div>
+

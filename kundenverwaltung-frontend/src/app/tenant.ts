@@ -1,4 +1,4 @@
-export interface Tenant {
-    id: number;
-    name: string;
-  }
+export class Tenant {
+    id: number | undefined;
+    name: string | undefined;
+}
