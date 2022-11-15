@@ -8,7 +8,7 @@ import { convertFromMaybeForwardRefExpression } from '@angular/compiler/src/rend
 import { FormControl } from '@angular/forms';
 import { runInThisContext } from 'vm';
 import { EMPTY, Observable } from 'rxjs';
-import { UserService } from 'src/app/service/user.service';
+import { AuthService } from 'src/app/service/auth.service';
 import { JwtData } from 'src/app/authorization';
 import { timeStamp } from 'console';
 
@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private tenantService: TenantService,
-    private userService: UserService
+    private authService: AuthService
   ) {}
 
     /*
@@ -99,15 +99,17 @@ export class LoginComponent implements OnInit {
     
     const tenantId : number = Number(this.selectedTenant?.id);
     
-    this.userService.login(this.name.value, this.password.value, tenantId).subscribe(jwtData => {
-      console.log('Got Token: ' + jwtData.token);
-    });
+    this.authService.login(this.name.value, this.password.value, tenantId);
 
     // Jetzt müssten wir uns auch noch um das JWT Geraffel kümmern
-    // https://jasonwatmore.com/post/2021/09/24/angular-http-interceptor-to-set-auth-header-for-api-requests-if-user-logged-in#:~:text=Angular%20JWT%20Interceptor&text=The%20JWT%20Interceptor%20intercepts%20HTTP,apiUrl%20).
-
-    hier weitermachen
-
+    // https://jasonwatmore.com/post/2021/09/24/angular-http-interceptor-to-set-auth-header-for-api-requests-if-user-logged-in#:~:text=Angular%20JWT%20Interceptor&text=The%20JWT%20Interceptor%20intercepts%20HTTP,apiUrl%20)
+    // https://blog.angular-university.io/angular-jwt-authentication/
+    // https://www.positronx.io/angular-jwt-user-authentication-tutorial/
+    //
+    // https://www.telerik.com/blogs/angular-basics-canactivate-introduction-routing-guards#:~:text=Angular%20route%20guards%20are%20interfaces,%2C%20CanLoad%2C%20CanDeactivate%20and%20Resolve.
+    // https://www.syncfusion.com/blogs/post/best-practices-for-jwt-authentication-in-angular-apps.aspx
+    //
+    // https://www.bezkoder.com/angular-12-refresh-token/
     this.router.navigate(['dashboard']);
   }
 }

@@ -18,7 +18,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import de.cmuellerke.kundenverwaltung.security.services.UserDetailsServiceImpl;
+import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
 	@Autowired
 	private JwtUtils jwtUtils;
@@ -35,7 +38,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 			String jwt = parseJwt(request);
 			if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
 				String username = jwtUtils.getUserNameFromJwtToken(jwt);
-
+				String tenantId = jwtUtils.getTenant(jwt);
+				
+				log.debug("Autorizing {} for tenant {}", username, tenantId);
+				
+				TenantContext.setTenantId(tenantId);
+				
 				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());

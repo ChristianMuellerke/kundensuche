@@ -1,5 +1,13 @@
 ### Als nächstes
 
+* Letzter Stand:
+  * Wenn die Loginseite geladen wird sollte vor dem Login das Token aus dem Storage gelöscht werden
+  * UI übergibt nicht sofort nach dem Login ein Bearertoken (vielleicht ist da was async und wir müssen irgendwie blockieren?
+  * Wenn irgendwas mit dem Token nicht stimmt sollten wir wieder auf die Loginseite gelangen. 
+  * Wir müssen die API sauber ziehen um das sauber abzugrenzen
+  /api/auth -> da sind unsere Autorisierungsgeschichten drin. Diese brauchen auch nicht unbedingt ein JWT
+  /api/users/all -> Benutzerverwaltung. Und /api/ heisst, dass es das Backend für die UI ist
+
 * UserInterface dazu bauen: Eine Angular-UI, die SignIn, Login, Refresh kann
   * Nach dem Login landet man in einer Übersicht über alle User
   * Wir haben eine Seite die Informationen zum aktuellen Login liefert

@@ -14,7 +14,7 @@ export class TenantService {
     this.tenantsUrl = 'http://localhost:8080/tenants/';
    }
 
-   public findAll(): Observable<Tenant[]> {
+  public findAll(): Observable<Tenant[]> {
     return this.http.get<Tenant[]>(this.tenantsUrl + "all");
   }
 

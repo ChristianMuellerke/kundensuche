@@ -10,7 +10,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HeaderComponent } from './components/header/header.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { UserService } from './service/user.service';
+import { AuthService } from './service/auth.service';
+import { LocalStorageService } from './service/localstorage.service';
+import { JWTTokenService } from './service/jwttoken.service';
+import { AuthorizeGuard } from './authorizeguard';
+import { httpInterceptorProviders, JwtInterceptor } from './jwtinterceptor';
 
 @NgModule({
   declarations: [
@@ -26,7 +30,7 @@ import { UserService } from './service/user.service';
     HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [TenantService, UserService],
+  providers: [TenantService, AuthService, AuthorizeGuard, httpInterceptorProviders, LocalStorageService, JWTTokenService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

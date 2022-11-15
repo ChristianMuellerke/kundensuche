@@ -19,7 +19,7 @@
       "runtimeExecutable": "/usr/bin/chromium",
       "runtimeArgs": [
         "--new-window",
-        "-user-data-dir=\"/${workspaceFolder}/DevProfile\"",
+        "-user-data-dir=${workspaceFolder}/DevProfile",
         "--remote-debugging-port=9222",
         "--disable-background-networking"
       ]

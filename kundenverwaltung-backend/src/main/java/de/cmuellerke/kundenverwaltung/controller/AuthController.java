@@ -151,8 +151,6 @@ public class AuthController {
 	public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
 		String requestRefreshToken = request.getRefreshToken();
 
-//		TenantContext.setTenantId(request.getTenantId());
-
 		return refreshTokenService.findByToken(requestRefreshToken)
 				.map(refreshTokenService::verifyExpiration)
 				.map(RefreshToken::getUser)

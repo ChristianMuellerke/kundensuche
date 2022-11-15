@@ -10,8 +10,10 @@ import org.springframework.transaction.annotation.Transactional;
 import de.cmuellerke.kundenverwaltung.models.User;
 import de.cmuellerke.kundenverwaltung.repository.UserRepository;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Autowired
@@ -21,9 +23,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		String tenantId = TenantContext.getTenantId();
+
+		log.debug("Obtaining User {} from Tenant {}", username, tenantId);
 		
 		User user = userRepository.findByUsernameAndTenantId(username, tenantId)
-				.orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + username));
+				.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
 		return UserDetailsImpl.build(user);
 	}
