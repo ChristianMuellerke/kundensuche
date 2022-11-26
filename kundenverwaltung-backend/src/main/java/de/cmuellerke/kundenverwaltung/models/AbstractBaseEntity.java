@@ -3,12 +3,11 @@ package de.cmuellerke.kundenverwaltung.models;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import javax.persistence.Column;
-import javax.persistence.EntityListeners;
-import javax.persistence.MappedSuperclass;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
@@ -27,7 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@FilterDef(name = "tenantFilter", parameters = { @ParamDef(name = "tenantId", type = "string") })
+@FilterDef(name = "tenantFilter", parameters = { @ParamDef(name = "tenantId", type = String.class) })
 @Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
 @EntityListeners({ TenantListener.class, AuditingEntityListener.class })
 public abstract class AbstractBaseEntity implements TenantAware, Serializable {

@@ -1,6 +1,6 @@
 package de.cmuellerke.kundenverwaltung.configuration;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -8,33 +8,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.aspectj.lang.annotation.Before;
 import org.assertj.core.api.WithAssertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.test.web.reactive.server.MockServerConfigurer;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.test.web.servlet.client.MockMvcWebTestClient;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CommonsRequestLoggingFilter;
-import org.springframework.web.reactive.function.BodyExtractor;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-import org.springframework.web.server.WebFilter;
 
 import com.google.gson.GsonBuilder;
 
@@ -49,7 +34,6 @@ import de.cmuellerke.kundenverwaltung.payload.response.TokenRefreshResponse;
 import de.cmuellerke.kundenverwaltung.payload.user.UserDTO;
 import de.cmuellerke.kundenverwaltung.security.jwt.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
-import reactor.core.publisher.Mono;
 
 @WebIntegrationTest
 @Slf4j
