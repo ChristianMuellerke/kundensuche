@@ -12,6 +12,7 @@ import javax.persistence.OneToOne;
 
 @Entity(name = "refreshtoken")
 public class RefreshToken extends AbstractBaseEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
@@ -58,5 +59,4 @@ public class RefreshToken extends AbstractBaseEntity {
 		this.expiryDate = expiryDate;
 	}
 
-	
 }
