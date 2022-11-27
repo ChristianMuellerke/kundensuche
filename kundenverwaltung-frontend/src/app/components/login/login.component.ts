@@ -52,7 +52,9 @@ export class LoginComponent implements OnInit {
     */
 
   ngOnInit() {
-    
+   
+    this.authService.deleteJwtToken();
+
     if (!this.navigated){
       this.name.disable();
       this.password.disable();
@@ -94,12 +96,12 @@ export class LoginComponent implements OnInit {
     });
   }
   
-  login() {
+  async login() {
     console.log('Logging in with Tenant=' + this.selectedTenant?.id + ' Username=' + this.name.value + ' Password=' + this.password.value );
     
     const tenantId : number = Number(this.selectedTenant?.id);
     
-    this.authService.login(this.name.value, this.password.value, tenantId);
+    await this.authService.login(this.name.value, this.password.value, tenantId);
 
     // Jetzt müssten wir uns auch noch um das JWT Geraffel kümmern
     // https://jasonwatmore.com/post/2021/09/24/angular-http-interceptor-to-set-auth-header-for-api-requests-if-user-logged-in#:~:text=Angular%20JWT%20Interceptor&text=The%20JWT%20Interceptor%20intercepts%20HTTP,apiUrl%20)

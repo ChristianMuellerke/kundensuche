@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { lastValueFrom, Observable, take } from 'rxjs';
 import { JwtData, LoginData } from '../authorization';
 import { LocalStorageService } from './localstorage.service';
 
@@ -16,13 +16,18 @@ export class AuthService {
     this.localStorageService = storageService;
   }
 
-  public login(username: string, password: string, tenantId: number) {
+  async login(username: string, password: string, tenantId: number) {
     const loginData : LoginData = new LoginData;
     loginData.password = password;
     loginData.tenantId = tenantId;
     loginData.username = username;
 
-    this.http.post<JwtData>(this.loginEndpointUrl, loginData).subscribe((jwtData) => this.setSession(jwtData), () => console.log('auth failed'));
+    console.log("starting login req")
+    await lastValueFrom(this.http.post<JwtData>(this.loginEndpointUrl, loginData))
+      .then((jwt:JwtData) => this.setSession(jwt))
+      .catch((e) => console.log(`An error occurred when getting the last element: ${e}`))
+      ;
+    console.log("ending login req")
   }
 
   private setSession(jwtData: JwtData) {
@@ -39,4 +44,8 @@ export class AuthService {
     return token;
   }
 
+  public deleteJwtToken(): void {
+    console.log("removing token from localstorage");
+    this.localStorageService.remove('AuthKey');
+  }
 }
