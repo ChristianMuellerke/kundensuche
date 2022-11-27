@@ -30,6 +30,7 @@ import de.cmuellerke.kundenverwaltung.payload.request.TokenRefreshRequest;
 import de.cmuellerke.kundenverwaltung.payload.response.ErrorMessage;
 import de.cmuellerke.kundenverwaltung.payload.response.JwtResponse;
 import de.cmuellerke.kundenverwaltung.payload.response.MessageResponse;
+import de.cmuellerke.kundenverwaltung.payload.response.PageWithUsersResponse;
 import de.cmuellerke.kundenverwaltung.payload.response.TokenRefreshResponse;
 import de.cmuellerke.kundenverwaltung.payload.user.UserDTO;
 import de.cmuellerke.kundenverwaltung.security.jwt.JwtUtils;
@@ -56,6 +57,7 @@ public class UserManagementIntegrationTests implements WithAssertions {
 	private static final String LOGIN = "/api/auth/signin";
 	private static final String REFRESH_TOKEN = "/api/auth/refreshtoken";
 	private static final String USERLIST_ENDPOINT = "/users/all";
+	private static final String USERLIST_PAGED_ENDPOINT = "/users/all/paged";
 	private static final String AUTHORIZATION = "Authorization";
 
     @BeforeEach
@@ -250,6 +252,74 @@ public class UserManagementIntegrationTests implements WithAssertions {
 		
 		assertThat(users).isNotEmpty();
 	}
+
+	@Test
+	@Order(501)
+	void canBrowseUsersWithPagination() {
+		final String USERNAME = "user501";
+		final String PASSWORD = "password501";
+		final String EMAIL = "user501@unittest.de";
+		final String TENANT = "PGTENANT0";
+		
+		doRegister(TENANT, USERNAME, PASSWORD, EMAIL);
+		doLogin(TENANT, USERNAME, PASSWORD, EMAIL);
+		
+		LoginRequest loginRequest = new LoginRequest();
+		loginRequest.setPassword(PASSWORD);
+		loginRequest.setUsername(USERNAME);
+		loginRequest.setTenantId(TENANT);
+
+		JwtResponse firstToken = doLogin(TENANT, USERNAME, PASSWORD, EMAIL);
+
+		log.debug("Refresh Token after Login: {}", firstToken.getRefreshToken());
+		
+		PageWithUsersResponse page = this.webTestClient//
+				.get()//
+				.uri(USERLIST_PAGED_ENDPOINT)//
+				.header(AUTHORIZATION, "Bearer " + firstToken.getToken()) //
+				.accept(MediaType.APPLICATION_JSON)//
+				.exchange()//
+				.expectStatus().isOk() //
+				.expectBody(PageWithUsersResponse.class)//
+				.returnResult()//
+				.getResponseBody();	
+
+		assertThat(page).isNotNull();
+		assertThat(page.getUsers()).isNotEmpty();
+		assertThat(page.getCurrentPage()).isEqualTo(0);
+		assertThat(page.getTotalPages()).isEqualTo(1);
+		assertThat(page.getTotalItems()).isEqualTo(1);
+	
+		log.debug("Page {} of {}, Users found = {}", page.getCurrentPage(), page.getTotalPages(), page.getTotalItems());
+
+		/*
+		 * Now we insert some Users
+		 */
+		
+		int USERS_TO_PROVIDE = 30;
+		
+		for (int i = 0; i < USERS_TO_PROVIDE; i++) {
+			doRegister(TENANT, USERNAME + "_" + i, PASSWORD, USERNAME + "_" + i + "@unittest.de");
+		}
+
+		page = this.webTestClient//
+				.get()//
+				.uri(USERLIST_PAGED_ENDPOINT)//
+				.header(AUTHORIZATION, "Bearer " + firstToken.getToken()) //
+				.accept(MediaType.APPLICATION_JSON)//
+				.exchange()//
+				.expectStatus().isOk() //
+				.expectBody(PageWithUsersResponse.class)//
+				.returnResult()//
+				.getResponseBody();	
+
+		assertThat(page).isNotNull();
+		assertThat(page.getUsers()).isNotEmpty();
+		assertThat(page.getCurrentPage()).isEqualTo(0);
+		assertThat(page.getTotalPages()).isEqualTo(11);
+		assertThat(page.getTotalItems()).isEqualTo(31);
+	}
+
 	
 	private MessageResponse doRegister(String tenantId, String username, String password, String email) {
 		SignupRequest signupRequest = new SignupRequest();

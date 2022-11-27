@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import de.cmuellerke.kundenverwaltung.models.RefreshToken;
+import de.cmuellerke.kundenverwaltung.models.User;
 import de.cmuellerke.kundenverwaltung.repository.RefreshTokenRepository;
 import de.cmuellerke.kundenverwaltung.repository.UserRepository;
 
