@@ -12,20 +12,75 @@ export class DashboardComponent implements OnInit {
 
   private usersService: UsersService;
 
-  private users: Array<User> = [];
+//  private users: Array<User> = [];
+
+  //p: number = 1;
+  //collection: any[] = this.users; 
+
+  users: User[] = [];
+  currentUser: User = new User();
+  currentIndex = -1;
+  title = '';
+
+  page = 1;
+  count = 0;
+  pageSize = 3;
+  pageSizes = [3, 6, 9];
 
   constructor(private userService: UsersService) {
     this.usersService = userService;
   }
 
-  // FEHLER IST ABSICHT: HIER JETZT EINE LISTE VON IRGENDWAS DARSTELLEN
-
   ngOnInit(): void {
-    this.userService.findAll().subscribe({
-      next: (users) => this.users.concat(users),
-      error: (e) => console.error("failed retrieving users: " + e),
-      complete: () => console.info("users retrieved")
-    });
+    // this.userService.findAll().subscribe({
+    //   next: (users) => this.users.concat(users),
+    //   error: (e) => console.error("failed retrieving users: " + e),
+    //   complete: () => console.info("users retrieved")
+    // });
+
+    this.retrieveUsers();
   }
+
+  retrieveUsers(): void {
+    const params = this.getRequestParams(this.page, this.pageSize);
+
+    this.userService.findAllPaged(params)
+    
+    .subscribe( {
+      next: (response:any) => {
+        const { users, totalItems } = response;
+        this.users = users;
+        this.count = totalItems;
+        console.log(response);
+      },
+      error: (error) => console.error("retrieving users failed: " + error)
+    });
+
+  }  
+
+  handlePageChange(event: number): void {
+    this.page = event;
+    this.retrieveUsers();
+  }
+
+  handlePageSizeChange(event: any): void {
+    this.pageSize = event.target.value;
+    this.page = 1;
+    this.retrieveUsers();
+  }
+
+  getRequestParams(page: number, pageSize: number): any {
+    let params: any = {};
+
+    if (page) {
+      params[`page`] = page - 1;
+    }
+
+    if (pageSize) {
+      params[`size`] = pageSize;
+    }
+
+    return params;
+  }  
 
 }

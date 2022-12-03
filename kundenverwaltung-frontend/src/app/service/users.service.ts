@@ -18,11 +18,11 @@ export class UsersService {
    }
 
   public findAll(): Observable<User[]> {
-    //let headers = new HttpHeaders();
-    //let authKey = this.localStorageService.get('AuthKey');
-    //headers = headers.set('Authorization', 'authKey');
-
     return this.http.get<User[]>(this.usersUrl + "all");
+  }
+
+  public findAllPaged(params: any): Observable<any> {
+    return this.http.get<any>(this.usersUrl + "all/paged", { params });
   }
 
 }

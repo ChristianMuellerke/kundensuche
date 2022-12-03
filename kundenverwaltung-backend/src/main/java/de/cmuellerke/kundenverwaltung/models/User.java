@@ -54,7 +54,7 @@ public class User extends AbstractBaseEntity {
 		this.username = username;
 		this.email = email;
 		this.password = password;
-		super.setCreatedDate(dateCreated);
+		super.setCreatedAt(dateCreated);
 	}
 
 	public Long getId() {

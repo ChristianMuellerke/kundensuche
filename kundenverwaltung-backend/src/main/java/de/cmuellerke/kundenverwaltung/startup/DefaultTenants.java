@@ -52,6 +52,11 @@ public class DefaultTenants implements CommandLineRunner {
 			userRepository.save(new User("user1", "user1@muellix.de", encoder.encode("11112222"), LocalDateTime.now()));
 			userRepository.save(new User("user2", "user2@muellix.de", encoder.encode("11112222"), LocalDateTime.now()));
 			userRepository.save(new User("user3", "user3@muellix.de", encoder.encode("11112222"), LocalDateTime.now()));
+			
+			log.debug("adding 100 testusers...to tenant " + tenant.getName());
+			for (int i = 0; i < 100; i++) {
+				userRepository.save(new User("Testbenutzer " + i, "testuser_" + i + "@muellix.de", encoder.encode("11112222"), LocalDateTime.now()));
+			}
 		});
 		
 	}

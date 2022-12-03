@@ -15,6 +15,7 @@ import { LocalStorageService } from './service/localstorage.service';
 import { JWTTokenService } from './service/jwttoken.service';
 import { AuthorizeGuard } from './authorizeguard';
 import { httpInterceptorProviders, JwtInterceptor } from './jwtinterceptor';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { httpInterceptorProviders, JwtInterceptor } from './jwtinterceptor';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxPaginationModule
   ],
   providers: [TenantService, AuthService, AuthorizeGuard, httpInterceptorProviders, LocalStorageService, JWTTokenService],
   bootstrap: [AppComponent]

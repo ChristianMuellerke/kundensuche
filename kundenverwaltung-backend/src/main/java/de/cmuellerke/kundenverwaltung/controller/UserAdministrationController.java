@@ -63,7 +63,6 @@ public class UserAdministrationController {
 
 		List<UserDTO> users = new ArrayList<UserDTO>();
 		users = pageWithUserDTO.getContent();
-
 		
 		PageWithUsersResponse pageResponse = PageWithUsersResponse.builder()
 				.currentPage(pageWithUserDTO.getNumber())
@@ -73,14 +72,6 @@ public class UserAdministrationController {
 				.build();
 		
 		return new ResponseEntity<>(pageResponse, HttpStatus.OK);
-		
-//		Map<String, Object> response = new HashMap<>();
-//		response.put("users", users);
-//		response.put("currentPage", pageWithUserDTO.getNumber());
-//		response.put("totalItems", pageWithUserDTO.getTotalElements());
-//		response.put("totalPages", pageWithUserDTO.getTotalPages());
-//
-//		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 }

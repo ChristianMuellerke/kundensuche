@@ -43,9 +43,9 @@ public abstract class AbstractBaseEntity implements TenantAware, Serializable {
 
 	@CreatedDate
 	@Column(name = "DATE_CREATED", nullable = false, updatable = false)
-	private LocalDateTime createdDate;
+	private LocalDateTime createdAt;
 
 	@Column(name = "DATE_MODIFIED")
 	@LastModifiedDate
-	private LocalDateTime modifiedDate;
+	private LocalDateTime modifiedAt;
 }

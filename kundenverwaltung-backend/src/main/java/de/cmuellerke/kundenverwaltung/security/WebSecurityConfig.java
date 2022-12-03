@@ -1,8 +1,11 @@
 package de.cmuellerke.kundenverwaltung.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -12,6 +15,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,8 +30,6 @@ import de.cmuellerke.kundenverwaltung.security.services.UserDetailsServiceImpl;
 
 @Configuration
 @EnableWebSecurity
-//@EnableMethodSecurity(prePostEnabled = true)
-//@EnableGlobalAuthentication
 public class WebSecurityConfig {
 
 	@Autowired
@@ -35,12 +37,17 @@ public class WebSecurityConfig {
 	
 	@Autowired
 	private UserDetailsServiceImpl userDetailsService;
-	
-	/*
-	 * Diese Konfiguration muss komplett neu gemacht werden, da sich alles gedreht hat
-	 * TODO umstellen auf das neue aus Spring
-	 */
 
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE)
+    SecurityFilterChain h2ConsoleSecurityFilterChain(HttpSecurity http) throws Exception {
+        http.securityMatcher(PathRequest.toH2Console());
+		http.authorizeHttpRequests((requests) -> customAuthorization(requests));
+        http.csrf((csrf) -> csrf.disable());
+        http.headers((headers) -> headers.frameOptions().sameOrigin());
+        return http.build();
+    }
+	
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     	return http.cors()//
@@ -51,13 +58,18 @@ public class WebSecurityConfig {
     			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)//
     			.and().headers().frameOptions().disable() //
     			.and() //
-    			.authorizeHttpRequests((requests) -> {
-    				requests//
-	    				.requestMatchers("/api/auth/**", "/api/test/**", "/tenants/**", "/h2-console/**").permitAll()//
-	    				.anyRequest().authenticated();
-    			}).addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+    			.authorizeHttpRequests((requests) -> customAuthorization(requests))//
+    			.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class) //
     			.authenticationProvider(authenticationProvider()) //
     			.build();
+	}
+
+	private void customAuthorization(
+			AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry requests) {
+		requests//
+			.requestMatchers("/api/auth/**", "/api/test/**", "/tenants/**", "/h2-console/**").permitAll()//
+			.requestMatchers(PathRequest.toH2Console()).permitAll() //
+			.anyRequest().authenticated();
 	}
 
     @Bean

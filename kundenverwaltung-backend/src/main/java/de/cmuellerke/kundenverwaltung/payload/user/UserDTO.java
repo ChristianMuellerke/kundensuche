@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class UserDTO {
 	String id;
 	String tenantId;
-	String name;
+	String username;
 	String email;
 	LocalDateTime createdAt;
 	LocalDateTime lastModifiedAt;

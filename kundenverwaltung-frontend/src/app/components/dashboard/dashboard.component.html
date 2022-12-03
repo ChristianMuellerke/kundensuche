@@ -1,3 +1,15 @@
 <app-header></app-header>
 <p>dashboard</p>
+
+<ul>
+    <li *ngFor="let user of users | paginate: { itemsPerPage: pageSize, currentPage: page, totalItems: count }"> {{ user.id }} - {{ user.username }} </li>
+  </ul>
+
+<pagination-controls
+  previousLabel="Zurück"
+  nextLabel="Weiter"
+  [responsive]="true"
+  (pageChange)="handlePageChange($event)"  
+></pagination-controls>
+
 <app-footer></app-footer>
