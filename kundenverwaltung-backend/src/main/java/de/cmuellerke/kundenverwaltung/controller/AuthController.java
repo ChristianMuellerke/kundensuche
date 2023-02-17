@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.validation.Valid;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import de.cmuellerke.kundenverwaltung.models.ERole;
 import de.cmuellerke.kundenverwaltung.models.RefreshToken;
 import de.cmuellerke.kundenverwaltung.models.Role;
-import de.cmuellerke.kundenverwaltung.models.User;
+import de.cmuellerke.kundenverwaltung.models.UserEntity;
 import de.cmuellerke.kundenverwaltung.payload.request.LoginRequest;
 import de.cmuellerke.kundenverwaltung.payload.request.SignupRequest;
 import de.cmuellerke.kundenverwaltung.payload.request.TokenRefreshRequest;
@@ -38,6 +36,7 @@ import de.cmuellerke.kundenverwaltung.security.services.RefreshTokenService;
 import de.cmuellerke.kundenverwaltung.security.services.TokenRefreshException;
 import de.cmuellerke.kundenverwaltung.security.services.UserDetailsImpl;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
+import jakarta.validation.Valid;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -107,10 +106,14 @@ public class AuthController {
 		}
 
 		// Create new user's account
-		User user = new User(signUpRequest.getUsername(), 
-				signUpRequest.getEmail(),
-				encoder.encode(signUpRequest.getPassword()), LocalDateTime.now());
+		UserEntity user = UserEntity.builder()
+				.username(signUpRequest.getUsername())
+				.email(signUpRequest.getEmail())
+				.password(encoder.encode(signUpRequest.getPassword()))
+				.createdAt(LocalDateTime.now())
+				.build();
 
+		
 		Set<String> strRoles = signUpRequest.getRole();
 		Set<Role> roles = new HashSet<>();
 

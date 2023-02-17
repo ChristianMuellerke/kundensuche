@@ -13,7 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 
-import de.cmuellerke.kundenverwaltung.models.User;
+import de.cmuellerke.kundenverwaltung.models.UserEntity;
 import de.cmuellerke.kundenverwaltung.payload.user.UserDTO;
 import de.cmuellerke.kundenverwaltung.repository.UserRepository;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
@@ -28,7 +28,7 @@ public class UserAdministrationService {
 	private ModelMapper modelMapper;
 
 	public List<UserDTO> getAllUsers() {
-		List<User> allUsers = userRepository.findByTenantId(TenantContext.getTenantId());
+		List<UserEntity> allUsers = userRepository.findByTenantId(TenantContext.getTenantId());
 
 		return allUsers.stream().map(user -> {
 			UserDTO userDTO = new UserDTO();
@@ -62,7 +62,7 @@ public class UserAdministrationService {
 
 		Pageable pagingSort = PageRequest.of(page, size, Sort.by(orders));
 
-		Page<User> pageWithUsers = userRepository.findByTenantId(TenantContext.getTenantId(), pagingSort);
+		Page<UserEntity> pageWithUsers = userRepository.findByTenantId(TenantContext.getTenantId(), pagingSort);
 
 		Page<UserDTO> pageWithUserDTO = pageWithUsers.map(user -> {
 			UserDTO userDTO = new UserDTO();

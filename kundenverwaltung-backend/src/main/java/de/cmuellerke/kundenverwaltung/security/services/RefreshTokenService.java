@@ -5,16 +5,14 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import jakarta.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import de.cmuellerke.kundenverwaltung.models.RefreshToken;
-import de.cmuellerke.kundenverwaltung.models.User;
 import de.cmuellerke.kundenverwaltung.repository.RefreshTokenRepository;
 import de.cmuellerke.kundenverwaltung.repository.UserRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class RefreshTokenService {

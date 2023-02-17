@@ -3,12 +3,6 @@ package de.cmuellerke.kundenverwaltung.models;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
@@ -18,6 +12,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import de.cmuellerke.kundenverwaltung.tenancy.TenantAware;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantListener;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +26,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @FilterDef(name = "tenantFilter", parameters = { @ParamDef(name = "tenantId", type = String.class) })
 @Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
 @EntityListeners({ TenantListener.class, AuditingEntityListener.class })

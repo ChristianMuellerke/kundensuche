@@ -7,14 +7,12 @@ import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import de.cmuellerke.kundenverwaltung.models.User;
+import de.cmuellerke.kundenverwaltung.models.UserEntity;
 import de.cmuellerke.kundenverwaltung.repository.UserRepository;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
 
@@ -39,8 +37,14 @@ public class UserRepositoryTest implements WithAssertions {
 	@Test
 	void canSaveUser() {
 		TenantContext.setTenantId(TENANT_1);
-		User user = new User("u1", "u1@unittest.de", "12345679", LocalDateTime.now());
-		User savedUser = userRepository.save(user);
+		
+		UserEntity savedUser = userRepository.save(UserEntity.builder()
+				.username("u1")
+				.email("u1@unittest.de")
+				.password("12345679")
+				.createdAt(LocalDateTime.now())
+				.build()
+		);
 		
 		assertThat(savedUser.getTenantId()).isEqualTo(TENANT_1);
 	}
@@ -49,21 +53,38 @@ public class UserRepositoryTest implements WithAssertions {
 	void canSaveUsersFromDifferentTenants() {
 		TenantContext.setTenantId(TENANT_1);
 		userRepository.deleteAll();
-		User user = new User("u1", "u1@unittest.de", "12345679", LocalDateTime.now());
-		User savedUser = userRepository.save(user);
+
+		UserEntity user = UserEntity.builder()
+				.username("u1")
+				.email("u1@unittest.de")
+				.password("12345679")
+				.createdAt(LocalDateTime.now())
+				.build();
+		UserEntity savedUser = userRepository.save(user);
+
+
+		
 		assertThat(savedUser.getTenantId()).isEqualTo(TENANT_1);
 		
 		TenantContext.setTenantId(TENANT_2);
-		User user2 = new User("u1", "u1@unittest.de", "12345679", LocalDateTime.now());
-		User savedUser2 = userRepository.save(user2);
+
+		UserEntity user2 = UserEntity.builder()
+				.username("u1")
+				.email("u1@unittest.de")
+				.password("12345679")
+				.createdAt(LocalDateTime.now())
+				.build();
+
+		
+		UserEntity savedUser2 = userRepository.save(user2);
 		assertThat(savedUser2.getTenantId()).isEqualTo(TENANT_2);
 
 		// id is unique
-		Optional<User> userFromTenant1 = userRepository.findById(savedUser.getId());
+		Optional<UserEntity> userFromTenant1 = userRepository.findById(savedUser.getId());
 		assertThat(userFromTenant1).isPresent();
 		assertThat(userFromTenant1.get().getTenantId()).isEqualTo(TENANT_1);
 
-		Optional<User> userFromTenant2 = userRepository.findById(savedUser2.getId());
+		Optional<UserEntity> userFromTenant2 = userRepository.findById(savedUser2.getId());
 		assertThat(userFromTenant2).isPresent();
 		assertThat(userFromTenant2.get().getTenantId()).isEqualTo(TENANT_2);
 

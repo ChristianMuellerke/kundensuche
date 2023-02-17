@@ -19,7 +19,7 @@ public class RefreshToken extends AbstractBaseEntity {
 
 	@OneToOne
 	@JoinColumn(name = "user_id", referencedColumnName = "id")
-	private User user;
+	private UserEntity user;
 
 	@Column(nullable = false, unique = true)
 	private String token;
@@ -35,11 +35,11 @@ public class RefreshToken extends AbstractBaseEntity {
 		this.id = id;
 	}
 
-	public User getUser() {
+	public UserEntity getUser() {
 		return user;
 	}
 
-	public void setUser(User user) {
+	public void setUser(UserEntity user) {
 		this.user = user;
 	}
 

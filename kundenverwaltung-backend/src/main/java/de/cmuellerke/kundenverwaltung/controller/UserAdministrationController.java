@@ -1,11 +1,8 @@
 package de.cmuellerke.kundenverwaltung.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -26,7 +23,7 @@ import de.cmuellerke.kundenverwaltung.service.UserAdministrationService;
 public class UserAdministrationController {
 
 	@Autowired
-	UserAdministrationService userAdministrationService;
+	private UserAdministrationService userAdministrationService;
 
 	/**
 	 * Liefere alle Benutzer des aktuellen Tenants zurück

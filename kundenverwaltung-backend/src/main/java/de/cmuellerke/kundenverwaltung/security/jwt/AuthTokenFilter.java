@@ -2,11 +2,6 @@ package de.cmuellerke.kundenverwaltung.security.jwt;
 
 import java.io.IOException;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +14,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import de.cmuellerke.kundenverwaltung.security.services.UserDetailsServiceImpl;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

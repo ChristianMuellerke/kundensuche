@@ -10,7 +10,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.context.request.WebRequestInterceptor;
 
 import de.cmuellerke.kundenverwaltung.security.jwt.JwtUtils;
-import io.jsonwebtoken.Jwts;
 
 @Component
 public class TenantInterceptor implements WebRequestInterceptor {

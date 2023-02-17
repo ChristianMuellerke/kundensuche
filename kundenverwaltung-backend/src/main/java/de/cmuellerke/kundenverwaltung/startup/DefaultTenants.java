@@ -7,10 +7,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import de.cmuellerke.kundenverwaltung.models.ERole;
-import de.cmuellerke.kundenverwaltung.models.Role;
 import de.cmuellerke.kundenverwaltung.models.Tenant;
-import de.cmuellerke.kundenverwaltung.models.User;
+import de.cmuellerke.kundenverwaltung.models.UserEntity;
 import de.cmuellerke.kundenverwaltung.repository.TenantRepository;
 import de.cmuellerke.kundenverwaltung.repository.UserRepository;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
@@ -49,13 +47,42 @@ public class DefaultTenants implements CommandLineRunner {
 	private void addDefaultUsers() {
 		tenantRepository.findAll().forEach(tenant -> {
 			TenantContext.setTenantId(tenant.getId().toString());
-			userRepository.save(new User("user1", "user1@muellix.de", encoder.encode("11112222"), LocalDateTime.now()));
-			userRepository.save(new User("user2", "user2@muellix.de", encoder.encode("11112222"), LocalDateTime.now()));
-			userRepository.save(new User("user3", "user3@muellix.de", encoder.encode("11112222"), LocalDateTime.now()));
+
 			
-			log.debug("adding 100 testusers...to tenant " + tenant.getName());
-			for (int i = 0; i < 100; i++) {
-				userRepository.save(new User("Testbenutzer " + i, "testuser_" + i + "@muellix.de", encoder.encode("11112222"), LocalDateTime.now()));
+			userRepository.save(UserEntity.builder()
+					.username("user1")
+					.email("user1@muellix.de")
+					.password(encoder.encode("11112222"))
+					.createdAt(LocalDateTime.now())
+					.build()
+			);
+
+			userRepository.save(UserEntity.builder()
+					.username("user2")
+					.email("user2@muellix.de")
+					.password(encoder.encode("11112222"))
+					.createdAt(LocalDateTime.now())
+					.build()
+			);
+
+			userRepository.save(UserEntity.builder()
+					.username("user3")
+					.email("user3@muellix.de")
+					.password(encoder.encode("11112222"))
+					.createdAt(LocalDateTime.now())
+					.build()
+			);
+
+			
+			log.debug("adding 5 testusers...to tenant " + tenant.getName());
+			for (int i = 0; i < 5; i++) {
+				userRepository.save(UserEntity.builder()
+						.username("Testbenutzer " + i)
+						.email("testuser_" + i + "@muellix.de")
+						.password(encoder.encode("11112222"))
+						.createdAt(LocalDateTime.now())
+						.build()
+				);
 			}
 		});
 		

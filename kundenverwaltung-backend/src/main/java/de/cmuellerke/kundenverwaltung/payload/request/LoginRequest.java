@@ -1,10 +1,6 @@
 package de.cmuellerke.kundenverwaltung.payload.request;
 
-import java.util.List;
-
 import jakarta.validation.constraints.NotBlank;
-
-import de.cmuellerke.kundenverwaltung.payload.response.JwtResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
