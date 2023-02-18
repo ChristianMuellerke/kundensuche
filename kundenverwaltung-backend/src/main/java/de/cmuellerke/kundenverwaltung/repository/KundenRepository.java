@@ -2,6 +2,7 @@ package de.cmuellerke.kundenverwaltung.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import de.cmuellerke.kundenverwaltung.models.KundeEntity;
 
 @Repository
-public interface KundenRepository extends JpaRepository<KundeEntity, Long> {
+public interface KundenRepository extends JpaRepository<KundeEntity, UUID> {
 	
 	Optional<KundeEntity> findByCustomerIdAndTenantId(String kundenId, String tenantId);
 

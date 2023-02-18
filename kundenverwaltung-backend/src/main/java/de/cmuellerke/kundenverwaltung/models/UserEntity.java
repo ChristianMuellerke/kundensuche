@@ -3,7 +3,11 @@ package de.cmuellerke.kundenverwaltung.models;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -22,21 +26,24 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "users", uniqueConstraints = { 
 		@UniqueConstraint(columnNames = { "tenant_id", "username"}),
 		@UniqueConstraint(columnNames = { "tenant_id", "email"}) 
 		})
+@SuperBuilder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class UserEntity extends AbstractBaseEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	
+	@Id 
+	@Column(name = "id", updatable = false, nullable = false)
+	@Builder.Default
+	private UUID id = UUID.randomUUID(); 
 
 	@NotBlank
 	@Size(max = 20)
@@ -54,12 +61,4 @@ public class UserEntity extends AbstractBaseEntity {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
-
-    @Builder
-    public UserEntity(LocalDateTime createdAt, String username, String email, String password) {
-        super.setCreatedAt(createdAt);
-        this.setEmail(email);
-        this.setUsername(username);
-        this.setPassword(password);
-    }
 }

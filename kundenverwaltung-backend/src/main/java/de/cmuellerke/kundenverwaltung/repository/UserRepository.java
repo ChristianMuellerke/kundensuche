@@ -2,6 +2,7 @@ package de.cmuellerke.kundenverwaltung.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import de.cmuellerke.kundenverwaltung.models.UserEntity;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, UUID> {
 	Optional<UserEntity> findByUsernameAndTenantId(String username, String tenantId);
 
 	Boolean existsByUsernameAndTenantId(String username, String tenantId);

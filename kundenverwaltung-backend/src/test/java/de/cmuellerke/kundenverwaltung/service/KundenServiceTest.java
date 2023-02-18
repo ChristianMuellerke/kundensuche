@@ -3,6 +3,8 @@ package de.cmuellerke.kundenverwaltung.service;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import de.cmuellerke.kundenverwaltung.models.UserEntity;
 import de.cmuellerke.kundenverwaltung.payload.customer.KundeDTO;
 
 @ExtendWith(SpringExtension.class)
@@ -38,4 +41,19 @@ class KundenServiceTest implements WithAssertions {
 		assertThat(gespeicherterKunde.getId()).isNotNull();
 	}
 
+	@Test
+	void testMehrereKundenNeuAnlegen() {
+		List<KundeDTO> kunden = new ArrayList<>();
+
+		for (int i = 0; i < 100; i++) {
+			KundeDTO neuerKunde = KundeDTO.builder()
+					.geburtsdatum(LocalDateTime.now()) //
+					.vorname("Christian_" + i) //
+					.nachname("Muellerke_" + i) //
+					.build();
+			kunden.add(neuerKunde);
+		}
+		
+		List<KundeDTO> gespeicherteKunden = kundenService.legeKundenAn(kunden);
+	}
 }

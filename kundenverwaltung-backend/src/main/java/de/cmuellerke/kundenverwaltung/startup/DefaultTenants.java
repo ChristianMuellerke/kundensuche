@@ -47,7 +47,6 @@ public class DefaultTenants implements CommandLineRunner {
 	private void addDefaultUsers() {
 		tenantRepository.findAll().forEach(tenant -> {
 			TenantContext.setTenantId(tenant.getId().toString());
-
 			
 			userRepository.save(UserEntity.builder()
 					.username("user1")

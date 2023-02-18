@@ -18,13 +18,16 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @MappedSuperclass
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @FilterDef(name = "tenantFilter", parameters = { @ParamDef(name = "tenantId", type = String.class) })
@@ -38,10 +41,6 @@ public abstract class AbstractBaseEntity implements TenantAware, Serializable {
 	@NotBlank
 	private String tenantId;
 
-	public AbstractBaseEntity(String tenantId) {
-		this.tenantId = tenantId;
-	}
-
 	@CreatedDate
 	@Column(name = "DATE_CREATED", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
@@ -49,4 +48,8 @@ public abstract class AbstractBaseEntity implements TenantAware, Serializable {
 	@Column(name = "DATE_MODIFIED")
 	@LastModifiedDate
 	private LocalDateTime modifiedAt;
+
+	public AbstractBaseEntity(String tenantId) {
+		this.tenantId = tenantId;
+	}
 }

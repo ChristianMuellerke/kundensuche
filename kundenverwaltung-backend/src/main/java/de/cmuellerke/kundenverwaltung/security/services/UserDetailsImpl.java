@@ -16,7 +16,7 @@ import de.cmuellerke.kundenverwaltung.models.UserEntity;
 public class UserDetailsImpl implements UserDetails {
 	private static final long serialVersionUID = 1L;
 
-	private Long id;
+	private String id;
 
 	private String username;
 
@@ -29,7 +29,7 @@ public class UserDetailsImpl implements UserDetails {
 
 	private Collection<? extends GrantedAuthority> authorities;
 
-	public UserDetailsImpl(Long id, String username, String email, String password, String tenantId,
+	public UserDetailsImpl(String id, String username, String email, String password, String tenantId,
 			Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.username = username;
@@ -43,7 +43,7 @@ public class UserDetailsImpl implements UserDetails {
 		List<GrantedAuthority> authorities = user.getRoles().stream()
 				.map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
 
-		return new UserDetailsImpl(user.getId(), user.getUsername(), user.getEmail(), user.getPassword(), user.getTenantId(), authorities);
+		return new UserDetailsImpl(user.getId().toString(), user.getUsername(), user.getEmail(), user.getPassword(), user.getTenantId(), authorities);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class UserDetailsImpl implements UserDetails {
 		return authorities;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
