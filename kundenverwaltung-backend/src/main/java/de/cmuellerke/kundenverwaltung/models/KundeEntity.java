@@ -2,13 +2,10 @@ package de.cmuellerke.kundenverwaltung.models;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
@@ -22,14 +19,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "customers", uniqueConstraints = { 
 		@UniqueConstraint(columnNames = { "tenant_id", "customer_id"}),
 		@UniqueConstraint(columnNames = { "tenant_id", "email"}) 
 		})
-@SuperBuilder
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
@@ -39,7 +35,7 @@ public class KundeEntity extends AbstractBaseEntity {
 	@Id 
 	@Column(name = "customer_id", updatable = false, nullable = false)
 	@Builder.Default
-	private UUID customerId = UUID.randomUUID();
+	private final UUID customerId = UUID.randomUUID();
 
 	@NotBlank
 	@Size(max = 40)

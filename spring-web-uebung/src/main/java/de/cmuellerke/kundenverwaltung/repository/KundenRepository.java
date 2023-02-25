@@ -9,9 +9,9 @@ import de.cmuellerke.kundenverwaltung.entity.KundeEntity;
 
 public interface KundenRepository extends JpaRepository<KundeEntity, UUID> {
 
-//	@Query("select p from customers p where email = :email")
-//	KundeEntity findJpqlByEmail(String email);
-//
-//	@Query(value = "select * from customers p where email = :email", nativeQuery = true)
-//	KundeEntity findSqlByEmail(String email);
+	@Query("select p from KundeEntity p where email = :email")
+	KundeEntity findJpqlByEmail(String email);
+
+	@Query(value = "select * from customers p where email = :email", nativeQuery = true)
+	KundeEntity findSqlByEmail(String email);
 }

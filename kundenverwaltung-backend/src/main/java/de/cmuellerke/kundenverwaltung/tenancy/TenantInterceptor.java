@@ -17,7 +17,7 @@ public class TenantInterceptor implements WebRequestInterceptor {
 	private final String defaultTenant;
 
 	private JwtUtils jwtUtils;
-	
+
 	@Autowired
 	public TenantInterceptor(@Value("${multitenancy.tenant.default-tenant:#{null}}") String defaultTenant) {
 		this.defaultTenant = defaultTenant;

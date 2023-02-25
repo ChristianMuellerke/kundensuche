@@ -1,6 +1,5 @@
 package de.cmuellerke.kundenverwaltung.repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,13 +12,12 @@ import de.cmuellerke.kundenverwaltung.models.UserEntity;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, UUID> {
-	Optional<UserEntity> findByUsernameAndTenantId(String username, String tenantId);
+	
+	Optional<UserEntity> findByUsername(String username);
 
-	Boolean existsByUsernameAndTenantId(String username, String tenantId);
+	Boolean existsByUsername(String username);
 
 	Boolean existsByEmail(String email);
-	
-	List<UserEntity> findByTenantId(String tenantId);
 	
 	Page<UserEntity> findByTenantId(String tenantId, Pageable pageable);
 }

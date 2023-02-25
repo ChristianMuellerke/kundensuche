@@ -1,12 +1,10 @@
 package de.cmuellerke.kundenverwaltung.controller;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,30 +34,30 @@ import de.cmuellerke.kundenverwaltung.security.services.RefreshTokenService;
 import de.cmuellerke.kundenverwaltung.security.services.TokenRefreshException;
 import de.cmuellerke.kundenverwaltung.security.services.UserDetailsImpl;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
+import de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
+@Slf4j
 public class AuthController {
-	@Autowired
-	AuthenticationManager authenticationManager;
+	private final AuthenticationManager authenticationManager;
 
-	@Autowired
-	UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	@Autowired
-	RoleRepository roleRepository;
+	private final RoleRepository roleRepository;
 
-	@Autowired
-	PasswordEncoder encoder;
+	private final PasswordEncoder encoder;
 
-	@Autowired
-	JwtUtils jwtUtils;
+	private final JwtUtils jwtUtils;
 
-	@Autowired
-	RefreshTokenService refreshTokenService;
-
+	private final RefreshTokenService refreshTokenService;
+	
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -91,9 +89,11 @@ public class AuthController {
 	}
 
 	@PostMapping("/signup")
+	@Transactional
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
 		TenantContext.setTenantId(signUpRequest.getTenantId());
-		if (userRepository.existsByUsernameAndTenantId(signUpRequest.getUsername(), signUpRequest.getTenantId())) {
+		
+		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
 			return ResponseEntity
 					.badRequest()
 					.body(new MessageResponse("Error: Username is already taken!"));
@@ -110,10 +110,8 @@ public class AuthController {
 				.username(signUpRequest.getUsername())
 				.email(signUpRequest.getEmail())
 				.password(encoder.encode(signUpRequest.getPassword()))
-				.createdAt(LocalDateTime.now())
 				.build();
 
-		
 		Set<String> strRoles = signUpRequest.getRole();
 		Set<Role> roles = new HashSet<>();
 
@@ -145,8 +143,10 @@ public class AuthController {
 		}
 
 		user.setRoles(roles);
-		userRepository.save(user);
+		UserEntity savedUser = userRepository.save(user);
 
+		log.debug("User {} on Tenant {} registered successfully!", user.getUsername(), user.getTenantId());
+		
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
 

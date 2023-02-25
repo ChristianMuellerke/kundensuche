@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,18 +16,20 @@ import de.cmuellerke.kundenverwaltung.models.UserEntity;
 import de.cmuellerke.kundenverwaltung.payload.user.UserDTO;
 import de.cmuellerke.kundenverwaltung.repository.UserRepository;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
+import de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class UserAdministrationService {
 	
-	@Autowired
-	private UserRepository userRepository;
+	
+	private final UserRepository userRepository;
 
-	@Autowired
-	private ModelMapper modelMapper;
-
+	private final ModelMapper modelMapper;
+	
 	public List<UserDTO> getAllUsers() {
-		List<UserEntity> allUsers = userRepository.findByTenantId(TenantContext.getTenantId());
+		List<UserEntity> allUsers = userRepository.findAll();
 
 		return allUsers.stream().map(user -> {
 			UserDTO userDTO = new UserDTO();

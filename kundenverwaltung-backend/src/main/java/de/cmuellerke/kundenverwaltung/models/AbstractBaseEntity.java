@@ -3,42 +3,34 @@ package de.cmuellerke.kundenverwaltung.models;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.TenantId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import de.cmuellerke.kundenverwaltung.tenancy.TenantAware;
-import de.cmuellerke.kundenverwaltung.tenancy.TenantListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 @MappedSuperclass
 @Getter
 @Setter
-@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@FilterDef(name = "tenantFilter", parameters = { @ParamDef(name = "tenantId", type = String.class) })
-@Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
-@EntityListeners({ TenantListener.class, AuditingEntityListener.class })
-public abstract class AbstractBaseEntity implements TenantAware, Serializable {
+@EntityListeners(TenantAuditListener.class)
+@Slf4j
+public abstract class AbstractBaseEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@Size(max = 30)
 	@Column(name = "tenant_id")
-	@NotBlank
+	@TenantId
 	private String tenantId;
 
 	@CreatedDate
@@ -52,4 +44,20 @@ public abstract class AbstractBaseEntity implements TenantAware, Serializable {
 	public AbstractBaseEntity(String tenantId) {
 		this.tenantId = tenantId;
 	}
+	
+	@PostLoad
+    private void postLoad() {
+    	log.debug("Loading for Tenant {}", tenantId);
+    }
+	
+    @PreUpdate
+    private void beforeAnyUpdate() {
+    	setModifiedAt(LocalDateTime.now());
+    }
+    
+    @PrePersist
+    private void beforePersisting() {
+    	setCreatedAt(LocalDateTime.now());
+    	setModifiedAt(LocalDateTime.now());
+    }
 }

@@ -18,7 +18,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "tenants", uniqueConstraints = { 
+@Table(name = "tenants2", uniqueConstraints = { 
 		@UniqueConstraint(columnNames = { "tenant_id"}) 
 		})
 public class Tenant {

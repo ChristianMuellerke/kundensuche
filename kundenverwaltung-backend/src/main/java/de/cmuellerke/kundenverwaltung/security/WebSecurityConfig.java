@@ -1,6 +1,5 @@
 package de.cmuellerke.kundenverwaltung.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,16 +20,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import de.cmuellerke.kundenverwaltung.security.jwt.AuthEntryPointJwt;
 import de.cmuellerke.kundenverwaltung.security.jwt.AuthTokenFilter;
 import de.cmuellerke.kundenverwaltung.security.services.UserDetailsServiceImpl;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig {
 
-	@Autowired
-	private AuthEntryPointJwt unauthorizedHandler;
+	private final AuthEntryPointJwt unauthorizedHandler;
 	
-	@Autowired
-	private UserDetailsServiceImpl userDetailsService;
+	private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)

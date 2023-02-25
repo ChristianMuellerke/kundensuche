@@ -1,14 +1,11 @@
 package de.cmuellerke.kundenverwaltung.models;
 
-import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -19,13 +16,12 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "adressen", uniqueConstraints = { 
 		@UniqueConstraint(columnNames = { "tenant_id", "adresse_id"}),
 		})
-@SuperBuilder
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor

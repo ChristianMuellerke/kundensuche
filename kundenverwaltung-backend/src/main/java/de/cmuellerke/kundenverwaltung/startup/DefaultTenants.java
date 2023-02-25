@@ -1,45 +1,37 @@
 package de.cmuellerke.kundenverwaltung.startup;
 
-import java.time.LocalDateTime;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import de.cmuellerke.kundenverwaltung.models.Tenant;
 import de.cmuellerke.kundenverwaltung.models.UserEntity;
 import de.cmuellerke.kundenverwaltung.repository.TenantRepository;
 import de.cmuellerke.kundenverwaltung.repository.UserRepository;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
+import de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class DefaultTenants implements CommandLineRunner {
 
-	private TenantRepository tenantRepository;
+	private final TenantRepository tenantRepository;
 	
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 	
-	private PasswordEncoder encoder;
-
-	@Autowired
-	public void DefaultTenants(TenantRepository tenantRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
-		this.tenantRepository = tenantRepository;
-		this.userRepository = userRepository;
-		this.encoder = passwordEncoder;
-	}
+	private final PasswordEncoder encoder;
 	
 	@Override
 	public void run(String... args) throws Exception {
 		log.debug("setting up default tenants");
 
-		tenantRepository.save(new Tenant("Testbank 1"));
-		tenantRepository.save(new Tenant("Testbank 2"));
-		tenantRepository.save(new Tenant("Testbank 3"));
-		tenantRepository.save(new Tenant("Testbank 4"));
-		tenantRepository.save(new Tenant("Testbank 5"));
+//		tenantRepository.save(new Tenant("Testbank 1"));
+//		tenantRepository.save(new Tenant("Testbank 2"));
+//		tenantRepository.save(new Tenant("Testbank 3"));
+//		tenantRepository.save(new Tenant("Testbank 4"));
+//		tenantRepository.save(new Tenant("Testbank 5"));
 		
 		addDefaultUsers();
 	}
@@ -52,7 +44,6 @@ public class DefaultTenants implements CommandLineRunner {
 					.username("user1")
 					.email("user1@muellix.de")
 					.password(encoder.encode("11112222"))
-					.createdAt(LocalDateTime.now())
 					.build()
 			);
 
@@ -60,7 +51,6 @@ public class DefaultTenants implements CommandLineRunner {
 					.username("user2")
 					.email("user2@muellix.de")
 					.password(encoder.encode("11112222"))
-					.createdAt(LocalDateTime.now())
 					.build()
 			);
 
@@ -68,18 +58,16 @@ public class DefaultTenants implements CommandLineRunner {
 					.username("user3")
 					.email("user3@muellix.de")
 					.password(encoder.encode("11112222"))
-					.createdAt(LocalDateTime.now())
 					.build()
 			);
 
 			
-			log.debug("adding 5 testusers...to tenant " + tenant.getName());
-			for (int i = 0; i < 5; i++) {
+			log.debug("adding 2 testusers...to tenant " + tenant.getName());
+			for (int i = 0; i < 2; i++) {
 				userRepository.save(UserEntity.builder()
 						.username("Testbenutzer " + i)
 						.email("testuser_" + i + "@muellix.de")
 						.password(encoder.encode("11112222"))
-						.createdAt(LocalDateTime.now())
 						.build()
 				);
 			}

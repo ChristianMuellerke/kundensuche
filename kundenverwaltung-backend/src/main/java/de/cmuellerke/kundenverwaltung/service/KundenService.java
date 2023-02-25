@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -13,6 +12,7 @@ import de.cmuellerke.kundenverwaltung.models.KundeEntity;
 import de.cmuellerke.kundenverwaltung.payload.customer.KundeDTO;
 import de.cmuellerke.kundenverwaltung.repository.KundenRepository;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
+import de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class KundenService {
 
 	private final KundenRepository kundenRepository;
-
+	
 	public List<KundeDTO> legeKundenAn(List<KundeDTO> neueKunden) {
 		
 		log.debug("Start Kunden anlegen - Size=" + neueKunden.size());
@@ -33,7 +33,6 @@ public class KundenService {
 				.geburtsdatum(kundeDTO.getGeburtsdatum().toInstant(ZoneOffset.UTC))
 				.nachname(kundeDTO.getNachname())
 				.vorname(kundeDTO.getVorname())
-				.createdAt(LocalDateTime.now())
 				.build();
 			
 			return neuerKunde;
@@ -59,7 +58,6 @@ public class KundenService {
 					.geburtsdatum(kundeDTO.getGeburtsdatum().toInstant(ZoneOffset.UTC))
 					.nachname(kundeDTO.getNachname())
 					.vorname(kundeDTO.getVorname())
-					.createdAt(LocalDateTime.now())
 					.build();
 			
 			return neuerKunde;

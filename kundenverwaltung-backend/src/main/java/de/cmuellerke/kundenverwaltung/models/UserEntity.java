@@ -5,17 +5,19 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.TenantId;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
@@ -26,19 +28,29 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "users", uniqueConstraints = { 
 		@UniqueConstraint(columnNames = { "tenant_id", "username"}),
 		@UniqueConstraint(columnNames = { "tenant_id", "email"}) 
 		})
-@SuperBuilder
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity extends AbstractBaseEntity {
+public class UserEntity {
+	@Column(name = "tenant_id")
+	@TenantId
+	private String tenantId;
+
+	@CreatedDate
+	@Column(name = "DATE_CREATED", nullable = false, updatable = false)
+	private LocalDateTime createdAt;
+
+	@Column(name = "DATE_MODIFIED")
+	@LastModifiedDate
+	private LocalDateTime modifiedAt;
 	
 	@Id 
 	@Column(name = "id", updatable = false, nullable = false)
@@ -61,4 +73,16 @@ public class UserEntity extends AbstractBaseEntity {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
+	
+    @PreUpdate
+    private void beforeAnyUpdate() {
+    	setModifiedAt(LocalDateTime.now());
+    }
+    
+    @PrePersist
+    private void beforePersisting() {
+    	setCreatedAt(LocalDateTime.now());
+    	setModifiedAt(LocalDateTime.now());
+    }
+
 }

@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,20 +13,23 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import de.cmuellerke.kundenverwaltung.security.services.UserDetailsServiceImpl;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
+import de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
+@NoArgsConstructor(force = true)
 public class AuthTokenFilter extends OncePerRequestFilter {
-	@Autowired
-	private JwtUtils jwtUtils;
+	private final JwtUtils jwtUtils;
 
-	@Autowired
-	private UserDetailsServiceImpl userDetailsService;
-
+	private final UserDetailsServiceImpl userDetailsService;
+	
 	private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
 	@Override
