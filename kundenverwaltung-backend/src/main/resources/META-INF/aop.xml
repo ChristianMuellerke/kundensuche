@@ -1,12 +1,12 @@
 <aspectj>
 
     <weaver options="-Xreweavable -Xset:weaveJavaxPackages=true">
-        <include within="de.cmuellerke.demo.tenancy.TenantFilterAspect"/>
+        <include within="de.cmuellerke.kundenverwaltung.tenancy.TenantFilterAspect"/>
         <include within="org.hibernate.internal.SessionFactoryImpl.SessionBuilderImpl"/>
     </weaver>
 
     <aspects>
-        <aspect name="de.cmuellerke.demo.tenancy.TenantFilterAspect"/>
+        <aspect name="de.cmuellerke.kundenverwaltung.tenancy.TenantFilterAspect"/>
     </aspects>
 
 </aspectj>

@@ -37,7 +37,7 @@ public class KundenRepositoryTest implements WithAssertions {
 	@Test
 	void testKannEinenKundenSpeichern() {
 		TenantContext.setTenantId(TENANT_1);
-		kundenRepository.save(createKunde("T1", "C1")); 
+		KundeEntity saved1T1 = kundenRepository.save(createKunde("T1", "C1"));
 		kundenRepository.save(createKunde("T1", "C2"));
 		assertThat(kundenRepository.findAll()).hasSize(2);
 		
@@ -45,6 +45,12 @@ public class KundenRepositoryTest implements WithAssertions {
 		kundenRepository.save(createKunde("T2", "C1")); 
 		kundenRepository.save(createKunde("T2", "C2"));
 		assertThat(kundenRepository.findAll()).hasSize(2);
+
+		kundenRepository.deleteById(saved1T1.getCustomerId());
+		
+//		TenantContext.setTenantId(TENANT_1); 
+//		kundenRepository.deleteAll();
+//		assertThat(kundenRepository.findAll()).hasSize(2);
 	}
 
 	private KundeEntity createKunde(String vorname, String nachname) {
