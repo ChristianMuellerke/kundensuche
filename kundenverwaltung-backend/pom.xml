@@ -44,6 +44,13 @@
 		</dependency>
 
 		<dependency>
+			<!-- https://github.com/invesdwin/invesdwin-instrument -->
+			<groupId>de.invesdwin</groupId>
+			<artifactId>invesdwin-instrument</artifactId>
+			<version>1.0.13</version>
+		</dependency>
+
+		<dependency>
 		    <groupId>io.jsonwebtoken</groupId>
 		    <artifactId>jjwt-api</artifactId>
 		    <version>0.11.5</version>
@@ -95,13 +102,14 @@
 		    <artifactId>jaxb-runtime</artifactId>
 		</dependency>
 
+<!--
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 			<optional>true</optional>
 		</dependency>
-
+-->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -275,4 +283,13 @@
     </profile>
   </profiles>
   
+  
+  
+	<repositories>
+		<repository>
+			<id>invesdwin-oss</id>
+			<url>https://invesdwin.de/repo/invesdwin-oss-remote</url>
+		</repository>
+	</repositories>
+	  
 </project>

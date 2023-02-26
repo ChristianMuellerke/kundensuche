@@ -21,15 +21,21 @@ import io.jsonwebtoken.UnsupportedJwtException;
 public class JwtUtils {
 	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-	
+	@Value("${app.version}")
+	private String testConfig;
+
+	@Value("${app.jwt.secret}")
 	private String jwtSecret;
+	
+	@Value("${app.jwt.secret.expiration}")
 	private int jwtExpirationMs;
 
-	@Autowired
-	public JwtUtils(@Value("${jwt.secret}") String secret, @Value("${jwt.secret.expiration}") int expirationInMillis) {
-		this.jwtSecret = secret;
-		this.jwtExpirationMs = expirationInMillis;
-	}
+	
+//	@Autowired
+//	public JwtUtils(@Value("${app.jwt.secret}") String secret, @Value("${app.jwt.secret.expiration}") int expirationInMillis) {
+//		this.jwtSecret = secret;
+//		this.jwtExpirationMs = expirationInMillis;
+//	}
 	
 	public String generateJwtToken(Authentication authentication) {
 

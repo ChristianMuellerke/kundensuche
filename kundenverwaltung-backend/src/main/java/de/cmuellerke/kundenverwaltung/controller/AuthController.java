@@ -110,9 +110,7 @@ public class AuthController {
 				.username(signUpRequest.getUsername())
 				.email(signUpRequest.getEmail())
 				.password(encoder.encode(signUpRequest.getPassword()))
-				.createdAt(LocalDateTime.now())
 				.build();
-
 		
 		Set<String> strRoles = signUpRequest.getRole();
 		Set<Role> roles = new HashSet<>();

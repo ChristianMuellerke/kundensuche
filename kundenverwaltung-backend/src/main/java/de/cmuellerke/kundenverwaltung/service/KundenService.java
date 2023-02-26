@@ -33,7 +33,6 @@ public class KundenService {
 				.geburtsdatum(kundeDTO.getGeburtsdatum().toInstant(ZoneOffset.UTC))
 				.nachname(kundeDTO.getNachname())
 				.vorname(kundeDTO.getVorname())
-				.createdAt(LocalDateTime.now())
 				.build();
 			
 			return neuerKunde;
@@ -59,7 +58,6 @@ public class KundenService {
 					.geburtsdatum(kundeDTO.getGeburtsdatum().toInstant(ZoneOffset.UTC))
 					.nachname(kundeDTO.getNachname())
 					.vorname(kundeDTO.getVorname())
-					.createdAt(LocalDateTime.now())
 					.build();
 			
 			return neuerKunde;
@@ -88,6 +86,7 @@ public class KundenService {
 				.vorname(kundeEntity.getVorname()) //
 				.nachname(kundeEntity.getNachname()) //
 				.id(kundeEntity.getCustomerId().toString()) //
+				.tenantId(kundeEntity.getTenantId()) //
 				.build();
 	}
 }

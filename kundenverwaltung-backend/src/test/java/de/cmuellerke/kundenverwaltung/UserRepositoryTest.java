@@ -42,7 +42,6 @@ public class UserRepositoryTest implements WithAssertions {
 				.username("u1")
 				.email("u1@unittest.de")
 				.password("12345679")
-				.createdAt(LocalDateTime.now())
 				.build()
 		);
 		
@@ -58,7 +57,6 @@ public class UserRepositoryTest implements WithAssertions {
 				.username("u1")
 				.email("u1@unittest.de")
 				.password("12345679")
-				.createdAt(LocalDateTime.now())
 				.build();
 		UserEntity savedUser = userRepository.save(user);
 
@@ -72,7 +70,6 @@ public class UserRepositoryTest implements WithAssertions {
 				.username("u1")
 				.email("u1@unittest.de")
 				.password("12345679")
-				.createdAt(LocalDateTime.now())
 				.build();
 
 		

@@ -9,6 +9,7 @@ import lombok.Data;
 @Builder
 public class KundeDTO {
 	private String id;
+	private String tenantId;
 	private String vorname;
 	private String nachname;
 	private LocalDateTime geburtsdatum;

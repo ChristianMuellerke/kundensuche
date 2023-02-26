@@ -35,11 +35,11 @@ public class DefaultTenants implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		log.debug("setting up default tenants");
 
-		tenantRepository.save(new Tenant("Testbank 1"));
-		tenantRepository.save(new Tenant("Testbank 2"));
-		tenantRepository.save(new Tenant("Testbank 3"));
-		tenantRepository.save(new Tenant("Testbank 4"));
-		tenantRepository.save(new Tenant("Testbank 5"));
+//		tenantRepository.save(new Tenant("Testbank 1"));
+//		tenantRepository.save(new Tenant("Testbank 2"));
+//		tenantRepository.save(new Tenant("Testbank 3"));
+//		tenantRepository.save(new Tenant("Testbank 4"));
+//		tenantRepository.save(new Tenant("Testbank 5"));
 		
 		addDefaultUsers();
 	}
@@ -52,7 +52,6 @@ public class DefaultTenants implements CommandLineRunner {
 					.username("user1")
 					.email("user1@muellix.de")
 					.password(encoder.encode("11112222"))
-					.createdAt(LocalDateTime.now())
 					.build()
 			);
 
@@ -60,7 +59,6 @@ public class DefaultTenants implements CommandLineRunner {
 					.username("user2")
 					.email("user2@muellix.de")
 					.password(encoder.encode("11112222"))
-					.createdAt(LocalDateTime.now())
 					.build()
 			);
 
@@ -68,7 +66,6 @@ public class DefaultTenants implements CommandLineRunner {
 					.username("user3")
 					.email("user3@muellix.de")
 					.password(encoder.encode("11112222"))
-					.createdAt(LocalDateTime.now())
 					.build()
 			);
 
@@ -79,7 +76,6 @@ public class DefaultTenants implements CommandLineRunner {
 						.username("Testbenutzer " + i)
 						.email("testuser_" + i + "@muellix.de")
 						.password(encoder.encode("11112222"))
-						.createdAt(LocalDateTime.now())
 						.build()
 				);
 			}

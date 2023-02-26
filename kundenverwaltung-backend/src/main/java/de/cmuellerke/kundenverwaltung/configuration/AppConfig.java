@@ -2,6 +2,7 @@ package de.cmuellerke.kundenverwaltung.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,4 +38,9 @@ public class AppConfig {
 		return filter;
 	}
 
+//	@Bean
+//	public InstrumentationLoadTimeWeaver loadTimeWeaver()  throws Throwable {
+//	    InstrumentationLoadTimeWeaver loadTimeWeaver = new InstrumentationLoadTimeWeaver();
+//	    return loadTimeWeaver;
+//	}
 }

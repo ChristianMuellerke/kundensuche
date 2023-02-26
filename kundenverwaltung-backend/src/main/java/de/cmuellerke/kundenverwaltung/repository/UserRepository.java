@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import de.cmuellerke.kundenverwaltung.models.UserEntity;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserEntity, UUID> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	Optional<UserEntity> findByUsernameAndTenantId(String username, String tenantId);
 
 	Boolean existsByUsernameAndTenantId(String username, String tenantId);

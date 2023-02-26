@@ -8,7 +8,6 @@ import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.ParamDef;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import de.cmuellerke.kundenverwaltung.tenancy.TenantAware;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantListener;
@@ -17,22 +16,17 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @MappedSuperclass
 @Getter
 @Setter
-@SuperBuilder
 @NoArgsConstructor
-@AllArgsConstructor
-@FilterDef(name = "tenantFilter", parameters = { @ParamDef(name = "tenantId", type = String.class) })
+@FilterDef(name = "tenantFilter", parameters = {@ParamDef(name = "tenantId", type = String.class)})
 @Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
-@EntityListeners({ TenantListener.class, AuditingEntityListener.class })
+@EntityListeners(TenantListener.class)
 public abstract class AbstractBaseEntity implements TenantAware, Serializable {
 	private static final long serialVersionUID = 1L;
 
@@ -41,13 +35,13 @@ public abstract class AbstractBaseEntity implements TenantAware, Serializable {
 	@NotBlank
 	private String tenantId;
 
-	@CreatedDate
-	@Column(name = "DATE_CREATED", nullable = false, updatable = false)
-	private LocalDateTime createdAt;
-
-	@Column(name = "DATE_MODIFIED")
-	@LastModifiedDate
-	private LocalDateTime modifiedAt;
+//	@CreatedDate
+//	@Column(name = "DATE_CREATED", nullable = false, updatable = false)
+//	private LocalDateTime createdAt;
+//
+//	@Column(name = "DATE_MODIFIED")
+//	@LastModifiedDate
+//	private LocalDateTime modifiedAt;
 
 	public AbstractBaseEntity(String tenantId) {
 		this.tenantId = tenantId;

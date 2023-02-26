@@ -1,11 +1,9 @@
 package de.cmuellerke.kundenverwaltung.models;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
-import org.hibernate.annotations.GenericGenerator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,30 +19,40 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "users", uniqueConstraints = { 
 		@UniqueConstraint(columnNames = { "tenant_id", "username"}),
 		@UniqueConstraint(columnNames = { "tenant_id", "email"}) 
 		})
-@SuperBuilder
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class UserEntity extends AbstractBaseEntity {
-	
-	@Id 
-	@Column(name = "id", updatable = false, nullable = false)
-	@Builder.Default
-	private UUID id = UUID.randomUUID(); 
 
+    @Builder
+    public UserEntity(Long id, String username, String email, String password, String tenantId) {
+        super(tenantId);
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+	
+//	@Id 
+//	@Column(name = "id", updatable = false, nullable = false)
+//	private UUID id = UUID.randomUUID(); 
+
+    @Id
+    @Column(name = "id", unique = true, nullable = false, updatable = false)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    protected Long id;
+
+    
 	@NotBlank
 	@Size(max = 20)
 	private String username;

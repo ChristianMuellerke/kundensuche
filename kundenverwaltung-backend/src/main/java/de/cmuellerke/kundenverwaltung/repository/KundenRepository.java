@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import de.cmuellerke.kundenverwaltung.models.KundeEntity;
 
 @Repository
-public interface KundenRepository extends JpaRepository<KundeEntity, UUID> {
+public interface KundenRepository extends JpaRepository<KundeEntity, Long> {
 	
 	Optional<KundeEntity> findByCustomerIdAndTenantId(String kundenId, String tenantId);
 

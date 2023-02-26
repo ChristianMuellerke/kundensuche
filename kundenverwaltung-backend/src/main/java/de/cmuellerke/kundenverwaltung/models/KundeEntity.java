@@ -2,7 +2,6 @@ package de.cmuellerke.kundenverwaltung.models;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -17,30 +16,40 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
+import lombok.ToString;
 
 @Entity
 @Table(name = "customers", uniqueConstraints = { 
 		@UniqueConstraint(columnNames = { "tenant_id", "customer_id"}),
 		@UniqueConstraint(columnNames = { "tenant_id", "email"}) 
 		})
-@SuperBuilder
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class KundeEntity extends AbstractBaseEntity {
 
-	@Id 
-	@Column(name = "customer_id", updatable = false, nullable = false)
-	@Builder.Default
-	private UUID customerId = UUID.randomUUID();
+    @Builder
+    public KundeEntity(Long id, String vorname, String nachname, Instant geburtsdatum, String tenantId) {
+        super(tenantId);
+        this.customerId = id;
+        this.vorname = vorname;
+        this.nachname = nachname;
+        this.geburtsdatum = geburtsdatum;
+    }
+	
+//	@Id 
+//	@Column(name = "customer_id", updatable = false, nullable = false)
+//	private UUID customerId = UUID.randomUUID();
 
+    @Id
+    @Column(name = "customer_id", unique = true, nullable = false, updatable = false)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    protected Long customerId;
+    
 	@NotBlank
 	@Size(max = 40)
 	private String vorname;
@@ -54,8 +63,13 @@ public class KundeEntity extends AbstractBaseEntity {
 	@Size(max = 50)
 	@Email
 	private String email;
+
+	@Override
+	public String toString() {
+		return "[T=" + getTenantId() + " ID=" + customerId + " - " + vorname + " " + nachname + "]";
+	}
 	
-	@OneToMany
-	@JoinColumn(name = "adresse_id", referencedColumnName = "customer_id")
-	List<AdresseEntity> adressen; // TODO umstellen auf Set? FetchMode?
+//	@OneToMany
+//	@JoinColumn(name = "adresse_id", referencedColumnName = "customer_id")
+//	List<AdresseEntity> adressen; // TODO umstellen auf Set? FetchMode?
 }
