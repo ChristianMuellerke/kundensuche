@@ -35,7 +35,8 @@ public class Personengenerator {
 			"Schwarz", "Grünspecht", "Schmitz", "Schmidt", "Zimmermann", "Krüger", "Braun", "Schmitt", "Krause",
 			"Hartmann", "Lange", "Werner", "Köhler", "Huber", "Fuchs", "Blocksberg", "Scholz", "Kaiser", "Jung",
 			"Vogel", "Friedrich", "Günther", "Ginter", "Schubert", "Schuhmacher", "Roth", "Beck", "Lorenz", "Franke",
-			"Holzmann", "Simon", "Schuster", "Krause", "Otto", "von der Schippe", "Plötzenich");
+			"Holzmann", "Simon", "Schuster", "Krause", "Otto", "von der Schippe", "Plötzenich", "Pulonski", "Mülner", 
+			"Milner", "Moier");
 
 	final static List<Stadt> staedte = Arrays.asList(//
 			new Stadt("Berlin", "12527"), //
@@ -54,6 +55,7 @@ public class Personengenerator {
 			new Stadt("Stuttgart", "70173"), //
 			new Stadt("Bernau", "16321"), //
 			new Stadt("Wriezen", "16269"), //
+			new Stadt("Mannheim", "33333"), //
 			new Stadt("Bad Freienwalde", "16248"));
 
 	final static List<String> strassen = Arrays.asList(//
