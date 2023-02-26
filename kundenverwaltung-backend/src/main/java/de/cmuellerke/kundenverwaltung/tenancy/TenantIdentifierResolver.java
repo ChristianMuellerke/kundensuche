@@ -1,5 +1,6 @@
 package de.cmuellerke.kundenverwaltung.tenancy;
 
+import java.net.URL;
 import java.util.Map;
 
 import org.hibernate.cfg.AvailableSettings;
@@ -10,38 +11,45 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import de.cmuellerke.kundenverwaltung.security.jwt.JwtUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-//@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver, HibernatePropertiesCustomizer {
-
-//	@Autowired
-//	private TenantContextAccess tenantContextAccess;
+public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver {
 	
 	// see sample under https://medium.com/deviniti-technology-driven-blog/implementing-multitenancy-architecture-spring-boot-jpa-hibernate-flyway-8fb19b312a10
 	
 	@Override
 	public String resolveCurrentTenantIdentifier() {
-		String tenantId = TenantContext.getTenantId() != null ? TenantContext.getTenantId() : "default";
-		
-		log.debug("Current tenantId = {}", tenantId);
-		
-		return tenantId;
-		
-//		RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-//		if (requestAttributes != null) {
-//			String tenantId = (String) requestAttributes.getAttribute(CURRENT_TENANT_IDENTIFIER, RequestAttributes.SCOPE_REQUEST);
-//			if (tenantId != null) {
-//				return tenantId;
-//			}
-//		}
-//		return DEFAULT_TENANT_ID;
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        //If session attribute exists returns tenantId saved on the session
+        
+        /*
+         * Bei /signIn und /login Requests ist die TenantId noch NULL, da diese nicht gesetzt werden
+         * Danach, bei normalen Requests ist der TenantContext dann gefüllt
+         * 
+         * Ausserdem scheint das @Component nicht zu funktionieren? Wir brauchen aber 
+         * 
+         * 
+         * Irgendwas stimmt mit dem Lifecycle nicht. Der AuthTokenFilter wird auch bei signIn und auth ausgeführt - und der ruft direkt in der DB an - hat aber keinen TenantContext dann gesetzt
+         */
+        
+        log.debug("TenantId from TenantContext: " + TenantContext.getTenantId());
+        
+        if (TenantContext.getTenantId() == null) {
+        	return "DEFAULT";
+        } 
+        	
+        return TenantContext.getTenantId();
 	}
 
 	@Override
@@ -49,14 +57,13 @@ public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver
 		return true;
 	}
 
-	@Override
-	public void customize(Map<String, Object> hibernateProperties) {
-		hibernateProperties.put(AvailableSettings.MULTI_TENANT_IDENTIFIER_RESOLVER, this);
+	private String parseJwt(HttpServletRequest request) {
+		String headerAuth = request.getHeader("Authorization");
+
+		if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+			return headerAuth.substring(7, headerAuth.length());
+		}
+
+		return null;
 	}
-	
-//	@Bean
-//	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-//	public TenantContextAccess tenantOnRequest() {
-//		return new TenantContextAccess();
-//	}
 }

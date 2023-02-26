@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -46,7 +47,12 @@ public class KundenService {
 	}
 	
 	public KundeDTO speichereKunde(KundeDTO kundeDTO) {
-		Optional<KundeEntity> foundKunde = kundenRepository.findByCustomerIdAndTenantId(kundeDTO.getId(), TenantContext.getTenantId());
+		
+		Optional<KundeEntity> foundKunde = Optional.empty();
+		
+		if (kundeDTO.getId() != null) {
+			foundKunde = kundenRepository.findById(UUID.fromString(kundeDTO.getId()));
+		}
 		
 		KundeEntity zuSpeichernderKunde = foundKunde.map(kunde -> {
 			kunde.setGeburtsdatum(kundeDTO.getGeburtsdatum().toInstant(ZoneOffset.UTC));
@@ -71,12 +77,12 @@ public class KundenService {
 	}
 
 	public Optional<KundeDTO> getKunde(String kundeId) {
-		Optional<KundeEntity> foundKunde = kundenRepository.findByCustomerIdAndTenantId(kundeId, TenantContext.getTenantId());
+		Optional<KundeEntity> foundKunde = kundenRepository.findById(UUID.fromString(kundeId));
 		return foundKunde.map(this::toKundeDTO);
 	}
 	
 	public List<KundeDTO> getAlleKunden() {
-		List<KundeEntity> gefundeneKunden = kundenRepository.findByTenantId(TenantContext.getTenantId());
+		List<KundeEntity> gefundeneKunden = kundenRepository.findAll();
 		return gefundeneKunden.stream().map(this::toKundeDTO).collect(Collectors.toList());
 	}
 	

@@ -21,7 +21,6 @@ import io.jsonwebtoken.UnsupportedJwtException;
 public class JwtUtils {
 	private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-	
 	private String jwtSecret;
 	private int jwtExpirationMs;
 

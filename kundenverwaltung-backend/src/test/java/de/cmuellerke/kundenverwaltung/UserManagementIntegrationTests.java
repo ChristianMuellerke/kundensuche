@@ -142,11 +142,11 @@ public class UserManagementIntegrationTests implements WithAssertions {
 		loginRequest.setPassword(PASSWORD);
 		loginRequest.setUsername(USERNAME);
 		loginRequest.setTenantId(TENANT_2);
-
 		
 		BadCredentialsException response = this.webTestClient//
 				.post()//
 				.uri(LOGIN)//
+				.header("X-TENANT-ID", TENANT_2) //
 				.body(BodyInserters.fromValue(loginRequest))//
 				.accept(MediaType.APPLICATION_JSON)//
 				.exchange()//
@@ -322,18 +322,20 @@ public class UserManagementIntegrationTests implements WithAssertions {
 
 	
 	private MessageResponse doRegister(String tenantId, String username, String password, String email) {
+		
 		SignupRequest signupRequest = new SignupRequest();
-
 		signupRequest.setTenantId(tenantId);
 		signupRequest.setUsername(username);
 		signupRequest.setPassword(password);
 		signupRequest.setEmail(email);
+		
 		Set<String> roles = Set.of(ERole.ROLE_USER.name());
 		signupRequest.setRole(roles);
 		
 		MessageResponse messageResponse = this.webTestClient//
 				.post()//
 				.uri(REGISTER)//
+				.header("X-TENANT-ID", tenantId) //
 				.body(BodyInserters.fromValue(signupRequest ))//
 				.accept(MediaType.APPLICATION_JSON)//
 				.exchange()//
@@ -360,6 +362,7 @@ public class UserManagementIntegrationTests implements WithAssertions {
 		JwtResponse jwtResponse = this.webTestClient//
 				.post()//
 				.uri(LOGIN)//
+				.header("X-TENANT-ID", tenantId) //
 				.body(BodyInserters.fromValue(loginRequest))//
 				.accept(MediaType.APPLICATION_JSON)//
 				.exchange()//

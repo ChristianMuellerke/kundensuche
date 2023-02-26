@@ -14,12 +14,12 @@ import de.cmuellerke.kundenverwaltung.models.KundeEntity;
 @Repository
 public interface KundenRepository extends JpaRepository<KundeEntity, UUID> {
 	
-	Optional<KundeEntity> findByCustomerIdAndTenantId(String kundenId, String tenantId);
-
-	Boolean existsByCustomerIdAndTenantId(String kundenId, String tenantId);
-
-	List<KundeEntity> findByTenantId(String tenantId);
-	
-	Page<KundeEntity> findByTenantId(String tenantId, Pageable pageable);
+//	Optional<KundeEntity> findByCustomerIdAndTenantId(String kundenId, String tenantId);
+//
+//	Boolean existsByCustomerIdAndTenantId(String kundenId, String tenantId);
+//
+//	List<KundeEntity> findByTenantId(String tenantId);
+//	
+//	Page<KundeEntity> findByTenantId(String tenantId, Pageable pageable);
 
 }

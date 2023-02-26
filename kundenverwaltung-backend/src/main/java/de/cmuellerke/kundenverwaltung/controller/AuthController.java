@@ -63,6 +63,8 @@ public class AuthController {
 
 		TenantContext.setTenantId(loginRequest.getTenantId());
 		
+		log.debug("/api/auth/signin for tenant {}", TenantContext.getTenantId());
+		
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
