@@ -7,6 +7,9 @@
   * ich wollte die Multi-Tenancy jetzt schon wieder umbauen, denn das hier sieht viel einfacher aus:
     - https://github.com/spring-projects/spring-data-examples/blob/main/jpa/multitenant/partition/src/test/java/example/springdata/jpa/hibernatemultitenant/partition/ApplicationTests.java
     - https://spring.io/blog/2022/07/31/how-to-integrate-hibernates-multitenant-feature-with-spring-data-jpa-in-a-spring-boot-application
+    
+  * die Multitenancy habe ich entsprechend umgebaut, es funktioniert jetzt auch. Dieser Branch muss jetzt zum master werden. Allerdings habe ich auf dem master auch Dinge getrieben, so dass ein einfacher merge nicht reichen wird -> ich muss das mit der merge strategy ours mergen, siehe https://stackoverflow.com/questions/2763006/make-the-current-git-branch-a-master-branch
+ 
 
 ### Ziele
 
