@@ -1,15 +1,11 @@
 ### Als nächstes
 
-* Letzter Stand:
-  * Login geht und man kann dann dort auf der Übersichtsseite auch die Benutzer aus der Datenbank sehen
-  * Wir bauen jetzt das CRUD für Kunden auf
-  * diese Endpunkte kann dann ein Testtreiber befeuern
-  * ich wollte die Multi-Tenancy jetzt schon wieder umbauen, denn das hier sieht viel einfacher aus:
-    - https://github.com/spring-projects/spring-data-examples/blob/main/jpa/multitenant/partition/src/test/java/example/springdata/jpa/hibernatemultitenant/partition/ApplicationTests.java
-    - https://spring.io/blog/2022/07/31/how-to-integrate-hibernates-multitenant-feature-with-spring-data-jpa-in-a-spring-boot-application
-    
-  * die Multitenancy habe ich entsprechend umgebaut, es funktioniert jetzt auch. Dieser Branch muss jetzt zum master werden. Allerdings habe ich auf dem master auch Dinge getrieben, so dass ein einfacher merge nicht reichen wird -> ich muss das mit der merge strategy ours mergen, siehe https://stackoverflow.com/questions/2763006/make-the-current-git-branch-a-master-branch
- 
+- wir räumen in GitHub auf!
+- wir versuchen uns doch an Hibernate Search
+
+### Hinweis
+
+Diese Version funktioniert mit MultiTenancy. Aber damit das klappt, muss nach einem Update von Spring Boot zwingend ein `mvn clean install` laufen. Sonst holt der sich nicht die richtigen AOP Dinge ran. Eclipse macht das bei einem Maven Update nicht!
 
 ### Ziele
 
