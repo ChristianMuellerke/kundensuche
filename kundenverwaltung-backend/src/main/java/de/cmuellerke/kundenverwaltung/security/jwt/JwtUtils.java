@@ -25,7 +25,7 @@ public class JwtUtils {
 	private int jwtExpirationMs;
 
 	@Autowired
-	public JwtUtils(@Value("${jwt.secret}") String secret, @Value("${jwt.secret.expiration}") int expirationInMillis) {
+	public JwtUtils(@Value("${jwt.secret.value}") String secret, @Value("${jwt.secret.expiration}") int expirationInMillis) {
 		this.jwtSecret = secret;
 		this.jwtExpirationMs = expirationInMillis;
 	}

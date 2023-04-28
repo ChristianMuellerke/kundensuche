@@ -1,0 +1,21 @@
+logging:
+  level:
+    de.cmuellerke.kundenverwaltung.configuration.AppConfig: DEBUG
+spring:
+  jpa:
+    properties:
+      hibernate:
+        generate_statistics: 'false'
+        jdbc:
+          batch_size: '100'
+        order_inserts: 'true'
+        format_sql: 'true'
+    show-sql: 'false'
+  datasource:
+    password: devtest
+    username: devtest
+    url: jdbc:postgresql://localhost:5432/demodb
+jwt:
+  secret:
+    value: javainuseDevTestDevTestDevTest123456789012345678901234567890123456789012345678901234567890
+    expiration: '86400000'
