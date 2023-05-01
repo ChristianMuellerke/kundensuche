@@ -1,7 +1,5 @@
 package de.cmuellerke.kundenverwaltung.security.services;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +13,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import de.cmuellerke.kundenverwaltung.models.UserEntity;
 import de.cmuellerke.kundenverwaltung.repository.UserRepository;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
-import de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest

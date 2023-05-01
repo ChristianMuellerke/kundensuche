@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import de.cmuellerke.kundenverwaltung.models.KundeEntity;
 import de.cmuellerke.kundenverwaltung.payload.customer.KundeDTO;
 import de.cmuellerke.kundenverwaltung.repository.KundenRepository;
-import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
-import de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver;
+import de.cmuellerke.kundenverwaltung.service.kafka.KundeEventPublisher;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +24,9 @@ public class KundenService {
 
 	private final KundenRepository kundenRepository;
 	
+	private final KundeEventPublisher eventPublisher;
+	
+	@Transactional
 	public List<KundeDTO> legeKundenAn(List<KundeDTO> neueKunden) {
 		
 		log.debug("Start Kunden anlegen - Size=" + neueKunden.size());
@@ -36,16 +39,22 @@ public class KundenService {
 				.vorname(kundeDTO.getVorname())
 				.build();
 			
+			
 			return neuerKunde;
 		}).collect(Collectors.toList());
 		
 		List<KundeEntity> neuAngelegteKunden = kundenRepository.saveAll(neuAnzulegendeKunden);
+
 		
 		log.debug("Ende Kunden anlegen - Size=" + neuAngelegteKunden.size());
 		
-		return neuAngelegteKunden.stream().map(this::toKundeDTO).collect(Collectors.toList());
+		return neuAngelegteKunden.stream()//
+				.map(this::toKundeDTO)//
+				.peek(eventPublisher::versendeKundeAngelegt) //
+				.collect(Collectors.toList());
 	}
 	
+	@Transactional
 	public KundeDTO speichereKunde(KundeDTO kundeDTO) {
 		
 		Optional<KundeEntity> foundKunde = Optional.empty();

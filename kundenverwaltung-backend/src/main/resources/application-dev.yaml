@@ -4,13 +4,17 @@ spring:
   jpa:
     generate-ddl: 'true'
     properties:
-      javax:
+      jakarta:
         persistence:
           validation:
             mode: none
       hibernate:
+        #multitenancy: discriminator
         tenant_identifier_resolver: de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver
-    show-sql: 'true'
+        #search.backend.multi_tenancy.strategy: discriminator
+      #hibernate.search.multi_tenancy.tenant_ids: tenant1,tenant2,tenant3,tenant4
+      #hibernate.search.coordination.strategy: outbox-polling        
+    show-sql: 'false'
     database-platform: org.hibernate.dialect.H2Dialect
   datasource:
     driverClassName: org.h2.Driver
@@ -23,8 +27,13 @@ spring:
       enabled: 'true'
 logging:
   level:
-    org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider: DEBUG
+    org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider: INFO
+    de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver: INFO
+    # die beiden im Level TRACE geben dann auch Werte im SQL aus
+    org.hibernate.orm.jdbc.bind: INFO
+    org.hibernate.orm.jdbc.extract: INFO
     de.cmuellerke: DEBUG
+    org.hibernate.search: DEBUG
     root: INFO
 jwt:
   secret:

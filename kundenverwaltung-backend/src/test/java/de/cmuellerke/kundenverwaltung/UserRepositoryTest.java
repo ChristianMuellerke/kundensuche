@@ -1,6 +1,5 @@
 package de.cmuellerke.kundenverwaltung;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.assertj.core.api.WithAssertions;
@@ -15,8 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import de.cmuellerke.kundenverwaltung.models.UserEntity;
 import de.cmuellerke.kundenverwaltung.repository.UserRepository;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
-import de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver;
-import lombok.RequiredArgsConstructor;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest

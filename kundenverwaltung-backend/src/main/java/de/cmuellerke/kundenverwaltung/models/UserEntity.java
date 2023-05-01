@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.hibernate.annotations.TenantId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -39,19 +38,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
-	@Column(name = "tenant_id")
-	@TenantId
-	private String tenantId;
-
-	@CreatedDate
-	@Column(name = "DATE_CREATED", nullable = false, updatable = false)
-	private LocalDateTime createdAt;
-
-	@Column(name = "DATE_MODIFIED")
-	@LastModifiedDate
-	private LocalDateTime modifiedAt;
-	
+public class UserEntity extends AbstractBaseEntity {
 	@Id 
 	@Column(name = "id", updatable = false, nullable = false)
 	@Builder.Default

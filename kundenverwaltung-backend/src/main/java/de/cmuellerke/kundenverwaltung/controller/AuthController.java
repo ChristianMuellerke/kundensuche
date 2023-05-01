@@ -34,7 +34,6 @@ import de.cmuellerke.kundenverwaltung.security.services.RefreshTokenService;
 import de.cmuellerke.kundenverwaltung.security.services.TokenRefreshException;
 import de.cmuellerke.kundenverwaltung.security.services.UserDetailsImpl;
 import de.cmuellerke.kundenverwaltung.tenancy.TenantContext;
-import de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

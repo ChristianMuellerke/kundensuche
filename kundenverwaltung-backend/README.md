@@ -2,7 +2,9 @@
 
 - wir räumen in GitHub auf!
 - wir versuchen uns doch an Hibernate Search
+daran bin ich hängen geblieben...das ist irgendwie tricky zu integrieren
 
+ 
 ### Hinweis
 
 Diese Version funktioniert mit MultiTenancy. Aber damit das klappt, muss nach einem Update von Spring Boot zwingend ein `mvn clean install` laufen. Sonst holt der sich nicht die richtigen AOP Dinge ran. Eclipse macht das bei einem Maven Update nicht!
