@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomi
 import org.springframework.stereotype.Component;
 
 @Component
-public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver, HibernatePropertiesCustomizer {
+public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver {
 
 	private String currentTenant = "unknown";
 
@@ -23,11 +23,6 @@ public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver
 
 	@Override
 	public boolean validateExistingCurrentSessions() {
-		return false;
-	}
-
-	@Override
-	public void customize(Map<String, Object> hibernateProperties) {
-		hibernateProperties.put(AvailableSettings.MULTI_TENANT_IDENTIFIER_RESOLVER, this);
+		return true;
 	}
 }

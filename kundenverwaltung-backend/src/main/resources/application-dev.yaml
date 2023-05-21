@@ -1,20 +1,18 @@
 spring:
   flyway:
-    enabled: 'false'
+    enabled: false
   jpa:
-    generate-ddl: 'true'
+    # show-sql: true
+    generate-ddl: true
     properties:
       jakarta:
         persistence:
           validation:
             mode: none
       hibernate:
-        #multitenancy: discriminator
         tenant_identifier_resolver: de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver
-        #search.backend.multi_tenancy.strategy: discriminator
-      #hibernate.search.multi_tenancy.tenant_ids: tenant1,tenant2,tenant3,tenant4
-      #hibernate.search.coordination.strategy: outbox-polling        
-    show-sql: 'false'
+        show-sql: true
+        format-sql: true
     database-platform: org.hibernate.dialect.H2Dialect
   datasource:
     driverClassName: org.h2.Driver
@@ -24,17 +22,16 @@ spring:
   h2:
     console:
       path: /h2-console
-      enabled: 'true'
+      enabled: true
 logging:
   level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
+    org.hibernate.type: TRACE
     org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider: INFO
     de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver: INFO
-    # die beiden im Level TRACE geben dann auch Werte im SQL aus
-    org.hibernate.orm.jdbc.bind: INFO
-    org.hibernate.orm.jdbc.extract: INFO
     de.cmuellerke: DEBUG
     org.hibernate.search: DEBUG
-    root: INFO
 jwt:
   secret:
     value: javainuseDevTestDevTestDevTest123456789012345678901234567890123456789012345678901234567890
