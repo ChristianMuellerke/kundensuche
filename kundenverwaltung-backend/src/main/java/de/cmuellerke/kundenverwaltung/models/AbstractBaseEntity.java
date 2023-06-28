@@ -57,7 +57,7 @@ public abstract class AbstractBaseEntity implements Serializable {
     }
     
     @PrePersist
-    private void beforePersisting(AbstractBaseEntity entityMetadata) {
+    private void beforePersisting() {
     	setCreatedAt(LocalDateTime.now());
     	setModifiedAt(LocalDateTime.now());
     }

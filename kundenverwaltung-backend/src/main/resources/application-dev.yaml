@@ -2,7 +2,7 @@ spring:
   flyway:
     enabled: false
   jpa:
-    # show-sql: true
+    show-sql: true
     generate-ddl: true
     properties:
       jakarta:
@@ -26,8 +26,10 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
     org.hibernate.orm.jdbc.bind: trace
-    org.hibernate.type: TRACE
+    # org.hibernate.type: trace
+    org.hibernate.orm.jdbc.extract: trace
     org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider: INFO
     de.cmuellerke.kundenverwaltung.tenancy.TenantIdentifierResolver: INFO
     de.cmuellerke: DEBUG

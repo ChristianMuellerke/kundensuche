@@ -54,7 +54,7 @@ public class KundenService {
 	
 	@Transactional
 	public KundeDTO speichereKunde(KundeDTO kundeDTO) {
-		log.info("Saving kunde, tenantId={}", TenantContext.getTenantInfo());
+		log.info("Saving kunde, tenantId={} Vorname={} Nachname={}", TenantContext.getTenantInfo(), kundeDTO.getVorname(), kundeDTO.getNachname());
 		
 		Optional<KundeEntity> foundKunde = Optional.empty();
 		
@@ -78,7 +78,7 @@ public class KundenService {
 		// TODO warum ist das so? 
 		gespeicherterKunde.setTenantId(TenantContext.getTenantInfo());
 		
-		log.info("[Tenant={}] Kunde {} gespeichert", gespeicherterKunde.getTenantId(), gespeicherterKunde.getCustomerId());
+		log.info("[Tenant={}] Kunde {} gespeichert (Tenant an Entity ist {})", gespeicherterKunde.getTenantId(), gespeicherterKunde.getCustomerId(), gespeicherterKunde.getTenantId());
 		
 		return toKundeDTO(gespeicherterKunde);
 	}
