@@ -1,13 +1,19 @@
 package de.cmuellerke.kundensuche.configuration;
 
-import org.elasticsearch.client.RestHighLevelClient;
+import org.apache.http.Header;
+import org.apache.http.HttpHost;
+import org.apache.http.message.BasicHeader;
+import org.elasticsearch.client.RestClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
-import org.springframework.data.elasticsearch.client.RestClients;
-import org.springframework.data.elasticsearch.config.AbstractElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
+import co.elastic.clients.transport.ElasticsearchTransport;
+import co.elastic.clients.transport.rest_client.RestClientTransport;
 
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "de.cmuellerke.kundensuche.repository")
@@ -20,10 +26,20 @@ public class ElasticsearchClientConfig extends AbstractElasticsearchConfiguratio
 
 		final ClientConfiguration clientConfiguration = ClientConfiguration//
 				.builder()//
-				// .connectedTo("192.168.178.130:9200")//
 				.connectedTo("localhost:9200")//
 				.build();
 
-		return RestClients.create(clientConfiguration).rest();
+		RestClient restClient = RestClient
+				.builder(HttpHost.create("localhost:9200"))
+				.setDefaultHeaders(new Header[]{
+						new BasicHeader("Authorization", "ApiKey " + apiKey)
+				})
+				.build();
+
+		ElasticsearchTransport transport = new RestClientTransport(
+				restClient, new JacksonJsonpMapper());
+
+		// And create the API client
+		return new ElasticsearchClient(transport);
 	}
 }

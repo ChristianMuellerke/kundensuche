@@ -1,7 +1,6 @@
 package de.cmuellerke.kundensuche.entity;
 
 
-import org.elasticsearch.core.Nullable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.CompletionField;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -10,6 +9,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Setting;
 import org.springframework.data.elasticsearch.core.suggest.Completion;
 
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

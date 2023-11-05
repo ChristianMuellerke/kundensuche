@@ -1,10 +1,10 @@
 package de.cmuellerke.kundenverwaltung.models;
 
-import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.annotations.TenantId;
+import org.hibernate.search.engine.backend.types.TermVector;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,6 +24,7 @@ import lombok.ToString;
 @Table(name = "customers", uniqueConstraints = { 
 		@UniqueConstraint(columnNames = { "tenant_id", "customer_id"}),
 		})
+@Indexed
 @Getter
 @Setter
 @ToString
@@ -38,10 +39,12 @@ public class KundeEntity extends AbstractBaseEntity {
 
 	@NotBlank
 	@Size(max = 40)
+	@FullTextField
 	private String vorname;
 
 	@NotBlank
 	@Size(max = 40)
+	@FullTextField
 	private String nachname;
 	
     @Override

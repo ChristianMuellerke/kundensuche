@@ -1,4 +1,4 @@
-package de.cmuellerke.kundensuche.testdaten;
+ package de.cmuellerke.kundensuche.testdaten;
 
 import java.util.ArrayList;
 import java.util.List;
