@@ -1,4 +1,4 @@
-package de.cmuellerke.kundenverwaltung.models;
+package de.cmuellerke.poc.entity;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
