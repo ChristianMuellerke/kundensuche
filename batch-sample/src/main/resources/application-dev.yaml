@@ -1,0 +1,29 @@
+spring:
+    datasource:
+        url: jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE
+        driver-class-name: org.h2.Driver   
+        username: sa
+        password: password
+
+    jpa:
+        database-platform: org.hibernate.dialect.H2Dialect
+        generate-ddl: true
+        properties:
+            hibernate:
+                format_sql: true
+                generate_statistics: false
+                jdbc.batch_size: 100
+                order_inserts: true
+        show-sql: true
+
+    h2:
+        console:
+            enabled: true
+            path: /h2-console    
+
+    flyway:
+        enabled: false
+logging:
+    level:
+        org.hibernate.SQL: INFO
+        root: INFO

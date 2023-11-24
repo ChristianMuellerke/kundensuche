@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/demodb
+    username: devtest
+    password: devtest
+
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        generate_statistics: false
+        jdbc.batch_size: 100
+        order_inserts: true
+    show-sql: false
+
+logging:
+  level:
+    org.hibernate.SQL: INFO
+
