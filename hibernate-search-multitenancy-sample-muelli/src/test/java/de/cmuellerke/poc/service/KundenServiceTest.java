@@ -1,71 +1,167 @@
 package de.cmuellerke.poc.service;
 
 
-import java.time.LocalDateTime;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.net.ssl.SSLContext;
+
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.assertj.core.api.WithAssertions;
+import org.assertj.core.util.Arrays;
+import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurationContext;
+import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurer;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.output.Slf4jLogConsumer;
+import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import de.cmuellerke.poc.payload.KundeDTO;
 import de.cmuellerke.poc.tenancy.TenantContext;
+import lombok.extern.slf4j.Slf4j;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
-@ActiveProfiles(profiles = "test")
-@TestPropertySource(properties = {
-        "spring.jpa.generate-ddl=true", "spring.jpa.show-sql=true" })
+@Testcontainers
+@ActiveProfiles("test")
+@DirtiesContext
+@Slf4j
 class KundenServiceTest implements WithAssertions {
 
-	@Autowired
-	private KundenService kundenService;
+	/*
+	 * Letzter Stand: ich wollte den Elastic Stack als Testcontainer laufen lassen.
+	 * 
+	 * Der Container ist da und man kann auch mit ihm kommunizieren. Aber unser 
+	 * hibernate-search lässt sich momentan noch nicht auf den dynamischen Port mappen
+	 * 
+	 * 
+	 * https://localhost:32827/_cat/indices
+	 * 
+	 * Username: elastic, Password: test
+	 *
+	 * 
+	 * Zertifikatsgedöns:
+	 * 
+	 * https://github.com/testcontainers/testcontainers-java/blob/main/modules/elasticsearch/src/test/java/org/testcontainers/elasticsearch/ElasticsearchContainerTest.java#L315
+	 */
 	
-	@Test
-	void testKannEinenKundenAmTenantSpeichern() {
-		TenantContext.setTenantId(Testdata.TENANT_1);
-		
-		KundeDTO neuerKunde = KundeDTO.builder()
-				.geburtsdatum(LocalDateTime.now()) //
-				.vorname("Christian") //
-				.nachname("Muellerke") //
-				.build();
-		
-		KundeDTO gespeicherterKunde = kundenService.speichereKunde(neuerKunde);
-		
-		assertThat(gespeicherterKunde.getId()).isNotNull();
-		assertThat(gespeicherterKunde.getVorname()).isEqualTo("Christian");
-		assertThat(gespeicherterKunde.getNachname()).isEqualTo("Muellerke");
-		
-		Optional<KundeDTO> gelesenerKunde = kundenService.getKunde(gespeicherterKunde.getId());
-		assertThat(gelesenerKunde).isNotEmpty();
-		assertThat(gelesenerKunde.get().getId()).isEqualTo(gespeicherterKunde.getId());
-		
-		TenantContext.setTenantId(Testdata.TENANT_2);
-		Optional<KundeDTO> gelesenerKundeAndererTenant = kundenService.getKunde(gespeicherterKunde.getId());
-		assertThat(gelesenerKundeAndererTenant).isEmpty();
-	}
+    @Container
+    static ElasticsearchContainer elasticsearch = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:8.11.4")//
 
-//	@Test
-//	void testMehrereKundenNeuAnlegen() {
-//		List<KundeDTO> kunden = new ArrayList<>();
-//
-//		for (int i = 0; i < 100; i++) {
-//			KundeDTO neuerKunde = KundeDTO.builder()
-//					.geburtsdatum(LocalDateTime.now()) //
-//					.vorname("Christian_" + i) //
-//					.nachname("Muellerke_" + i) //
-//					.build();
-//			kunden.add(neuerKunde);
-//		}
-//		
-//		List<KundeDTO> gespeicherteKunden = kundenService.legeKundenAn(kunden);
-//	}
+    	.withPassword("test")
+    	.waitingFor(new HttpWaitStrategy().forPort(9200).usingTls().allowInsecure().withBasicCredentials("elastic", "test"))
+    	.withStartupTimeout(Duration.ofMinutes(5))
+    	.withLogConsumer(new Slf4jLogConsumer(log));
+	
+    @Autowired
+    private KundenService kundenService;
+
+    @Autowired
+    private CustomerSearchService customerSearchService;
+
+    @DynamicPropertySource
+    static void setupProperties(DynamicPropertyRegistry registry) {
+    	log.info("Elastic is running under {}", elasticsearch.getHttpHostAddress());
+    	log.info("Elastic is running under {}", elasticsearch.getFirstMappedPort());
+    	log.info("Elastic is running under {}", elasticsearch.getPortBindings());
+    	log.info("Elastic is running under {}", elasticsearch.getExposedPorts());
+    	String adress = elasticsearch.getHost() + ":" + elasticsearch.getMappedPort(9200);
+    	log.info("Elastic is running under {}", adress);
+        registry.add("spring.jpa.properties.hibernate.search.backend.hosts", elasticsearch::getHttpHostAddress);
+    }
+    
+	@TestConfiguration
+	@Slf4j
+	static class SSL {
+		/**
+		 * see application-test profile, setting hibernate.search.backend.client.configurer
+		 * @return
+		 */
+		@Bean
+		ElasticsearchHttpClientConfigurer customizer() {
+			log.info("Configuring SSL Context");
+			return new ElasticsearchHttpClientConfigurer() {
+				@Override
+				public void configure(ElasticsearchHttpClientConfigurationContext context) {
+					HttpAsyncClientBuilder clientBuilder = context.clientBuilder();
+					clientBuilder.setSSLContext(elasticsearch.createSslContextFromCa());
+				}
+			};
+		}
+	}
+    
+    @Test
+    void testInfrastructure() {
+    	assertThat(elasticsearch.isCreated()).isTrue();
+    	assertThat(elasticsearch.isRunning()).isTrue();
+    }
+    
+    @Test
+    void testKannEinenKundenAmTenantSpeichern() {
+        TenantContext.setTenantId(Testdata.TENANT_1);
+
+        KundeDTO neuerKunde = KundeDTO.builder()
+                .vorname("Christian") //
+                .nachname("Muellerke") //
+                .build();
+
+        KundeDTO gespeicherterKunde = kundenService.speichereKunde(neuerKunde);
+
+        assertThat(gespeicherterKunde.getId()).isNotNull();
+        assertThat(gespeicherterKunde.getVorname()).isEqualTo("Christian");
+        assertThat(gespeicherterKunde.getNachname()).isEqualTo("Muellerke");
+
+        Optional<KundeDTO> gelesenerKunde = kundenService.getKunde(gespeicherterKunde.getId());
+        assertThat(gelesenerKunde).isNotEmpty();
+        assertThat(gelesenerKunde.get().getId()).isEqualTo(gespeicherterKunde.getId());
+
+        TenantContext.setTenantId(Testdata.TENANT_2);
+        Optional<KundeDTO> gelesenerKundeAndererTenant = kundenService.getKunde(gespeicherterKunde.getId());
+        assertThat(gelesenerKundeAndererTenant).isEmpty();
+    }
+
+    @Test
+    void testKannEinenKundenAmTenant2_Speichern_UndDiesenDanachFinden() throws InterruptedException {
+        TenantContext.setTenantId(Testdata.TENANT_2);
+
+        KundeDTO neuerKunde = KundeDTO.builder()
+                .vorname("Muelli") //
+                .nachname("Muellerke") //
+                .build();
+
+        KundeDTO gespeicherterKunde = kundenService.speichereKunde(neuerKunde);
+
+        assertThat(gespeicherterKunde.getId()).isNotNull();
+        assertThat(gespeicherterKunde.getVorname()).isEqualTo("Muelli");
+        assertThat(gespeicherterKunde.getNachname()).isEqualTo("Muellerke");
+
+        Thread.sleep(500);
+        
+        // suche nach diesem Kunden
+        List<KundeDTO> customersFound = customerSearchService.findByName("Muellerke");
+        assertThat(customersFound).isNotEmpty();
+        assertThat(customersFound.get(0).getNachname()).isEqualTo("Muellerke");
+
+        // suche nach diesem Kunden, anderer Tenant
+        TenantContext.setTenantId(Testdata.TENANT_3);
+        List<KundeDTO> customersFoundForTenant3 = customerSearchService.findByName("Muellerke");
+        assertThat(customersFoundForTenant3).isEmpty();
+    }
+
 }

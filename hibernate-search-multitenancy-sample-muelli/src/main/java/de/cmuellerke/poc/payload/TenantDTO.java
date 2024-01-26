@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TenantDTO {
-	String id;
-	String name;
+    String id;
+    String name;
 }

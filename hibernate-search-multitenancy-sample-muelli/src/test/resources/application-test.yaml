@@ -1,0 +1,59 @@
+spring:
+  main:
+    banner-mode: off
+  datasource:
+    url: 'jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE'
+    driver-class-name: 'org.h2.Driver'
+    username: sa
+    password: password
+  jpa:
+    properties:
+      javax:
+        persistence:
+          validation:
+            mode: none
+      hibernate:
+        formatsql: true
+        generatestatistics: false
+        orderinserts: true
+        jdbc:
+          batchsize: 100
+        '[tenant_identifier_resolver]': 'de.cmuellerke.poc.tenancy.TenantIdentifierResolver'
+        search:
+          schema-management:
+            strategy: drop-and-create
+          backend:
+#            hosts: 192.168.178.204:9200
+#            hosts: localhost:32787
+            protocol: https
+            username: elastic
+            password: test
+            #password: My55Fc3eaY9h662LUp0dnd61
+            log:
+                '[json_pretty_printing]': true
+            client:
+                configurer: bean:ElasticsearchHttpClientConfigurer
+                #configurer: class:de.cmuellerke.poc.service.KundenServiceTest.HttpClientConfigurer 
+          automatic-indexing:
+              synchronization:
+                strategy: sync # only for testing reasonably
+    show-sql: true
+    generate-ddl: true
+    database-platform: 'org.hibernate.dialect.H2Dialect'
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  flyway:
+    enabled: false
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: INFO
+    org.hibernate.search.elasticsearch.request: TRACE
+    org.apache.http.impl.nio.client: TRACE
+    org.hibernate.search.query: TRACE
+    org.hibernate.search: DEBUG
+    tc: DEBUG
+    '[org.testcontainers]': DEBUG 

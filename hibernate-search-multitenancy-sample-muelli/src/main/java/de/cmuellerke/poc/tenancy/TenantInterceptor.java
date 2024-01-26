@@ -12,33 +12,33 @@ import org.springframework.web.context.request.WebRequestInterceptor;
 @Component
 public class TenantInterceptor implements WebRequestInterceptor {
 
-	private final String defaultTenant;
+    private final String defaultTenant;
 
-	@Autowired
-	public TenantInterceptor(@Value("${multitenancy.tenant.default-tenant:#{null}}") String defaultTenant) {
-		this.defaultTenant = defaultTenant;
-	}
+    @Autowired
+    public TenantInterceptor(@Value("${multitenancy.tenant.default-tenant:#{null}}") String defaultTenant) {
+        this.defaultTenant = defaultTenant;
+    }
 
-	@Override
-	public void preHandle(WebRequest request) {
-		String tenantId;
-		if (request.getHeader("X-TENANT-ID") != null) {
-			tenantId = request.getHeader("X-TENANT-ID");
-		} else if (this.defaultTenant != null) {
-			tenantId = this.defaultTenant;
-		} else {
-			tenantId = ((ServletWebRequest) request).getRequest().getServerName().split("\\.")[0];
-		}
-		TenantContext.setTenantId(tenantId);
-	}
+    @Override
+    public void preHandle(WebRequest request) {
+        String tenantId;
+        if (request.getHeader("X-TENANT-ID") != null) {
+            tenantId = request.getHeader("X-TENANT-ID");
+        } else if (this.defaultTenant != null) {
+            tenantId = this.defaultTenant;
+        } else {
+            tenantId = ((ServletWebRequest) request).getRequest().getServerName().split("\\.")[0];
+        }
+        TenantContext.setTenantId(tenantId);
+    }
 
-	@Override
-	public void postHandle(@NonNull WebRequest request, ModelMap model) {
-		TenantContext.clear();
-	}
+    @Override
+    public void postHandle(@NonNull WebRequest request, ModelMap model) {
+        TenantContext.clear();
+    }
 
-	@Override
-	public void afterCompletion(@NonNull WebRequest request, Exception ex) {
-		// NOOP
-	}
+    @Override
+    public void afterCompletion(@NonNull WebRequest request, Exception ex) {
+        // NOOP
+    }
 }

@@ -11,5 +11,4 @@ public class CustomerDTO {
 	private String id;
 	private String vorname;
 	private String nachname;
-	private LocalDateTime geburtsdatum;
 }

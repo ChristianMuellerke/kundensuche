@@ -17,5 +17,4 @@ public interface KundenRepository extends ElasticsearchRepository<Kunde, String>
 	Page<Kunde> findByVorname(String kurzname, Pageable pageable);
 
 	Page<Kunde> findByNachname(String kurzname, Pageable pageable);
-
 }

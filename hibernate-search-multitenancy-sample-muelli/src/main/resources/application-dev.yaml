@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    url: 'jdbc:h2:mem:testdb;DB_CLOSE_ON_EXIT=FALSE'
+    driver-class-name: 'org.h2.Driver'
+    username: sa
+    password: password
+  jpa:
+    properties:
+      javax:
+        persistence:
+          validation:
+            mode: none
+      hibernate:
+        format_sql: true
+        generate_statistics: false
+        order_inserts: true
+        jdbc:
+          batch_size: 100
+        tenant_identifier_resolver: 'de.cmuellerke.poc.tenancy.TenantIdentifierResolver'
+        search:
+          schema-management:
+            strategy: drop-and-create
+          backend:
+            hosts: 192.168.178.204:9200
+            protocol: http
+            username: elastic
+            password: My55Fc3eaY9h662LUp0dnd61
+          automatic-indexing:
+              synchronization:
+                strategy: sync # only for testing reasonably
+
+    show-sql: false
+    generate-ddl: true
+    database-platform: 'org.hibernate.dialect.H2Dialect'
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  flyway:
+    enabled: false
