@@ -32,6 +32,7 @@ public class CustomerService {
             CustomerEntity newCustomer = CustomerEntity.builder()
                     .familyname(customerDTO.getFamilyname())
                     .forename(customerDTO.getForename())
+                    .fullname(customerDTO.getForename() + " " + customerDTO.getFamilyname())
                     .build();
 
             return newCustomer;
@@ -56,11 +57,13 @@ public class CustomerService {
         CustomerEntity customerToSave = foundCustomer.map(customer -> {
             customer.setFamilyname(null);
             customer.setForename(customerDTO.getForename());
+            customer.setFullname(customerDTO.getForename() + " " + customerDTO.getFamilyname());
             return customer;
         }).orElseGet(() -> {
             CustomerEntity newCustomer = CustomerEntity.builder()
                     .familyname(customerDTO.getFamilyname())
                     .forename(customerDTO.getForename())
+                    .fullname(customerDTO.getForename() + " " + customerDTO.getFamilyname())
                     .build();
 
             return newCustomer;
@@ -103,7 +106,8 @@ public class CustomerService {
 
         return CustomerDTO.builder()
                 .forename(customerEntity.getForename()) 
-                .familyname(customerEntity.getFamilyname()) 
+                .familyname(customerEntity.getFamilyname())
+                .fullname(customerEntity.getFullname())
                 .id(customerEntity.getCustomerId().toString()) 
                 .tenantId(customerEntity.getTenantId()) 
                 .build();

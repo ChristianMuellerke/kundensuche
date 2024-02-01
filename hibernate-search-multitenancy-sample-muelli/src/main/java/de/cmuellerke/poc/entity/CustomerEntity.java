@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.NonStandardField;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBinderRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 
 import java.util.UUID;
@@ -36,4 +38,9 @@ public class CustomerEntity extends AbstractBaseEntity {
     @FullTextField
     private String familyname;
 
+    @NotBlank
+    @Size(max = 120)
+    @NonStandardField(valueBinder = @ValueBinderRef(type = FullnameValueBinder.class))
+    private String fullname;
+    
 }

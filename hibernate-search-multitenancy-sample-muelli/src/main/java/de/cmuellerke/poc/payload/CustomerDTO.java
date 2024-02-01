@@ -10,4 +10,5 @@ public class CustomerDTO {
     private String forename;
     private String familyname;
     private String tenantId;
+    private String fullname;
 }

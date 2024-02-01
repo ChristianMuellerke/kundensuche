@@ -2,6 +2,7 @@ package de.cmuellerke.poc.service;
 
 import java.util.List;
 
+import org.hibernate.search.backend.elasticsearch.ElasticsearchExtension;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.session.SearchSession;
@@ -40,4 +41,34 @@ public class CustomerSearchService {
 
         return searchResult.hits().stream().map(customerService::toCustomerDTO).toList();
     }
+
+    @Transactional(readOnly=true)
+	public List<CustomerDTO> searchAsYouType(String fullname) {
+		SearchSession searchSession = Search.session(entityManager);
+		String tenantId = TenantContext.getTenantId();
+		log.info("{} Searching for {}", tenantId, fullname);
+
+        String saytClause = """
+        		{
+				    "multi_match": {
+				      "query": "%s",
+				      "type": "bool_prefix",
+				      "fields": [
+				        "fullname",
+				        "fullname._2gram",
+				        "fullname._3gram"
+				      ]
+				    }
+				  }
+				
+        		""".formatted(fullname);
+        
+		SearchResult<CustomerEntity> searchResult = searchSession.search(CustomerEntity.class)
+        		.extension(ElasticsearchExtension.get())
+        		.where(f -> f.fromJson(saytClause))
+        		.fetchAll();
+
+        return searchResult.hits().stream().map(customerService::toCustomerDTO).toList();
+
+	}
 }

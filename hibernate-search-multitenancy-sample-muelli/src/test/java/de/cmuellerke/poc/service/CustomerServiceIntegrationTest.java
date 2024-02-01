@@ -120,15 +120,12 @@ class CustomerServiceIntegrationTest implements WithAssertions {
     void testCanSaveCustomerOnTenant() {
         TenantContext.setTenantId(Testdata.TENANT_1);
 
-        CustomerDTO newCustomer = CustomerDTO.builder()
-                .forename("Christian") //
-                .familyname("Muellerke") //
-                .build();
-
+        CustomerDTO newCustomer = Testdata.CUSTOMER_1;
+        
         CustomerDTO savedCustomer = customerService.save(newCustomer);
 
         assertThat(savedCustomer.getId()).isNotNull();
-        assertThat(savedCustomer.getForename()).isEqualTo("Christian");
+        assertThat(savedCustomer.getForename()).isEqualTo("Muelli");
         assertThat(savedCustomer.getFamilyname()).isEqualTo("Muellerke");
 
         Optional<CustomerDTO> foundCustomer = customerService.find(savedCustomer.getId());
@@ -144,11 +141,8 @@ class CustomerServiceIntegrationTest implements WithAssertions {
     void testCanSaveCustomerOnTenantAndCanSearchFor() throws InterruptedException {
         TenantContext.setTenantId(Testdata.TENANT_2);
 
-        CustomerDTO newCustomer = CustomerDTO.builder()
-                .forename("Muelli") //
-                .familyname("Muellerke") //
-                .build();
-
+        CustomerDTO newCustomer = Testdata.CUSTOMER_1;
+        
         CustomerDTO savedCustomer = customerService.save(newCustomer);
 
         assertThat(savedCustomer.getId()).isNotNull();
@@ -174,6 +168,34 @@ class CustomerServiceIntegrationTest implements WithAssertions {
         assertThat(customersFoundForTenant3).isEmpty();
     }
 
+    @Test
+    void testSearchAsYouTypeByFullname() throws InterruptedException {
+        TenantContext.setTenantId(Testdata.TENANT_2);
+
+        CustomerDTO newCustomer = Testdata.CUSTOMER_1;
+
+        CustomerDTO savedCustomer = customerService.save(newCustomer);
+
+        Awaitility.await().atMost(Duration.of(20, ChronoUnit.SECONDS)).until(() -> {
+        	log.info("polling...");
+        	
+            List<CustomerDTO> customersFound = customerSearchService.searchAsYouType("Muel");
+            if (!customersFound.isEmpty()) {
+            	assertThat(customersFound.get(0).getFamilyname()).isEqualTo("Muellerke");
+            	assertThat(customersFound.get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
+            	return true;
+            }
+            
+            return false;
+        });
+        
+        // search for this customer on other tenant
+        TenantContext.setTenantId(Testdata.TENANT_3);
+        List<CustomerDTO> customersFoundForTenant3 = customerSearchService.findByName("Muellerke");
+        assertThat(customersFoundForTenant3).isEmpty();
+    }
+
+    
     @Test
     void testLoadingAndSearching() throws InterruptedException {
     	TenantContext.setTenantId(Testdata.TENANT_2);
