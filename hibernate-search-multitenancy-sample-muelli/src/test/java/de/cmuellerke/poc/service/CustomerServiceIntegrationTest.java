@@ -155,21 +155,19 @@ class CustomerServiceIntegrationTest implements WithAssertions {
         assertThat(savedCustomer.getForename()).isEqualTo("Muelli");
         assertThat(savedCustomer.getFamilyname()).isEqualTo("Muellerke");
 
-        // TODO: is there a better way? its asynchronously, but this is very ugly
-        // maybe using awaitaily?
-        
         Awaitility.await().atMost(Duration.of(10, ChronoUnit.SECONDS)).until(() -> {
         	log.info("polling...");
-        	return !customerSearchService.findByName("Muellerke").isEmpty();
+        	
+            List<CustomerDTO> customersFound = customerSearchService.findByName("Muellerke");
+            if (!customersFound.isEmpty()) {
+            	assertThat(customersFound.get(0).getFamilyname()).isEqualTo("Muellerke");
+            	assertThat(customersFound.get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
+            	return true;
+            }
+            
+            return false;
         });
         
-        // search for this customer TODO: muss das in den await am besten mit rein?
-        List<CustomerDTO> customersFound = customerSearchService.findByName("Muellerke");
-        assertThat(customersFound).isNotEmpty();
-        assertThat(customersFound.get(0).getFamilyname()).isEqualTo("Muellerke");
-        assertThat(customersFound.get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
-        
-
         // search for this customer on other tenant
         TenantContext.setTenantId(Testdata.TENANT_3);
         List<CustomerDTO> customersFoundForTenant3 = customerSearchService.findByName("Muellerke");
