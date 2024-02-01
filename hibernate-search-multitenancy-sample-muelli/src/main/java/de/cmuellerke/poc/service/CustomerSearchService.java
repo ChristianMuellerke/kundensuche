@@ -4,7 +4,7 @@ import de.cmuellerke.poc.entity.KundeEntity;
 import de.cmuellerke.poc.payload.KundeDTO;
 import de.cmuellerke.poc.tenancy.TenantContext;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.search.engine.search.query.SearchResult;
@@ -23,7 +23,7 @@ public class CustomerSearchService {
 
     private final EntityManager entityManager;
 
-    @Transactional
+    @Transactional(readOnly=true)
     public List<KundeDTO> findByName(String nachname) {
         SearchSession searchSession = Search.session(entityManager);
 

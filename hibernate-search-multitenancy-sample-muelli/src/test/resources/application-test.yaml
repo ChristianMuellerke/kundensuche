@@ -20,23 +20,26 @@ spring:
           batchsize: 100
         '[tenant_identifier_resolver]': 'de.cmuellerke.poc.tenancy.TenantIdentifierResolver'
         search:
-          schema-management:
+# new since last time        
+          coordination:
+            strategy: outbox-polling
+          multi_tenancy:
+            # we have to provide a list of tenants
+            tenant_ids: t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20
+          schema_management:
             strategy: drop-and-create
+# reenable if outbox-polling is disabled            
+#          automatic_indexing:
+#              synchronization:
+#                strategy: sync # only for testing reasonably
           backend:
-#            hosts: 192.168.178.204:9200
-#            hosts: localhost:32787
             protocol: https
             username: elastic
             password: test
-            #password: My55Fc3eaY9h662LUp0dnd61
             log:
                 '[json_pretty_printing]': true
             client:
                 configurer: bean:ElasticsearchHttpClientConfigurer
-                #configurer: class:de.cmuellerke.poc.service.KundenServiceTest.HttpClientConfigurer 
-          automatic-indexing:
-              synchronization:
-                strategy: sync # only for testing reasonably
     show-sql: true
     generate-ddl: true
     database-platform: 'org.hibernate.dialect.H2Dialect'
@@ -57,3 +60,7 @@ logging:
     org.hibernate.search: DEBUG
     tc: DEBUG
     '[org.testcontainers]': DEBUG 
+
+#Unused properties: [hibernate.search.automatic-indexing.synchronization.strategy, hibernate.search.schema-management.strategy]. To disable this warning, set the property 'hibernate.search.configuration_property_checking.strategy' to 'ignore'.
+#Unused properties: [hibernate.search.schema-management.strategy]. To disable this warning, set the property 'hibernate.search.configuration_property_checking.strategy' to 'ignore'.
+

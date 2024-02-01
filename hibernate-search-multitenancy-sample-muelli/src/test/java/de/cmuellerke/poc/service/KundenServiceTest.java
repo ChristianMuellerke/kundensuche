@@ -2,6 +2,9 @@ package de.cmuellerke.poc.service;
 
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,9 +14,11 @@ import javax.net.ssl.SSLContext;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.assertj.core.api.WithAssertions;
 import org.assertj.core.util.Arrays;
+import org.awaitility.Awaitility;
 import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurationContext;
 import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurer;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +39,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import de.cmuellerke.poc.payload.KundeDTO;
+import de.cmuellerke.poc.repository.KundenRepository;
 import de.cmuellerke.poc.tenancy.TenantContext;
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,6 +80,9 @@ class KundenServiceTest implements WithAssertions {
 
     @Autowired
     private CustomerSearchService customerSearchService;
+    
+    @Autowired 
+    private KundenRepository kundenRepository;
 
     @DynamicPropertySource
     static void setupProperties(DynamicPropertyRegistry registry) {
@@ -105,7 +114,12 @@ class KundenServiceTest implements WithAssertions {
 			};
 		}
 	}
-    
+
+	@BeforeEach
+	void init() {
+		kundenRepository.deleteAll();
+	}
+	
     @Test
     void testInfrastructure() {
     	assertThat(elasticsearch.isCreated()).isTrue();
@@ -151,12 +165,20 @@ class KundenServiceTest implements WithAssertions {
         assertThat(gespeicherterKunde.getVorname()).isEqualTo("Muelli");
         assertThat(gespeicherterKunde.getNachname()).isEqualTo("Muellerke");
 
-        Thread.sleep(500);
+        // TODO: is there a better way? its asynchronously, but this is very ugly
+        // maybe using awaitaily?
         
-        // suche nach diesem Kunden
+        Awaitility.await().atMost(Duration.of(10, ChronoUnit.SECONDS)).until(() -> {
+        	log.info("polling...");
+        	return !customerSearchService.findByName("Muellerke").isEmpty();
+        });
+        
+        // suche nach diesem Kunden TODO: muss das in den await am besten mit rein?
         List<KundeDTO> customersFound = customerSearchService.findByName("Muellerke");
         assertThat(customersFound).isNotEmpty();
         assertThat(customersFound.get(0).getNachname()).isEqualTo("Muellerke");
+        assertThat(customersFound.get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
+        
 
         // suche nach diesem Kunden, anderer Tenant
         TenantContext.setTenantId(Testdata.TENANT_3);
@@ -164,4 +186,21 @@ class KundenServiceTest implements WithAssertions {
         assertThat(customersFoundForTenant3).isEmpty();
     }
 
+    /*
+     * Weitere Testmethoden
+     * 
+     * insert 100 customers in every tenant
+     * do a mass index on all
+     * 
+     * TODO: 
+     * refactor to english
+     * evaluate tenants from outside
+     * restart on tenant list changes?
+     * search suggestion
+     * search-as-you-type
+     * implement web frontend
+     * paging!
+     */
+    
+    
 }

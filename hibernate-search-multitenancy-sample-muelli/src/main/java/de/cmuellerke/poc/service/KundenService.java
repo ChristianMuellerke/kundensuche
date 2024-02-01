@@ -4,10 +4,10 @@ import de.cmuellerke.poc.entity.KundeEntity;
 import de.cmuellerke.poc.payload.KundeDTO;
 import de.cmuellerke.poc.repository.KundenRepository;
 import de.cmuellerke.poc.tenancy.TenantContext;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +22,7 @@ public class KundenService {
 
     private final KundenRepository kundenRepository;
 
+    @Transactional
     public List<KundeDTO> legeKundenAn(List<KundeDTO> neueKunden) {
 
         log.debug("Start Kunden anlegen - Size=" + neueKunden.size());
