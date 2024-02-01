@@ -1,9 +1,10 @@
 package de.cmuellerke.poc.service;
 
 
-import de.cmuellerke.poc.payload.KundeDTO;
+import de.cmuellerke.poc.payload.CustomerDTO;
 import de.cmuellerke.poc.tenancy.TenantContext;
 import org.assertj.core.api.WithAssertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,11 @@ import java.util.Optional;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles(profiles = "test")
-class KundenServiceIntegrationTest implements WithAssertions {
+@Disabled
+class OldIntegrationTest implements WithAssertions {
 
     @Autowired
-    private KundenService kundenService;
+    private CustomerService kundenService;
 
     @Autowired
     private CustomerSearchService customerSearchService;
@@ -29,23 +31,23 @@ class KundenServiceIntegrationTest implements WithAssertions {
     void testKannEinenKundenAmTenantSpeichern() {
         TenantContext.setTenantId(Testdata.TENANT_1);
 
-        KundeDTO neuerKunde = KundeDTO.builder()
-                .vorname("Christian") //
-                .nachname("Muellerke") //
+        CustomerDTO neuerKunde = CustomerDTO.builder()
+                .forename("Christian") //
+                .familyname("Muellerke") //
                 .build();
 
-        KundeDTO gespeicherterKunde = kundenService.speichereKunde(neuerKunde);
+        CustomerDTO gespeicherterKunde = kundenService.save(neuerKunde);
 
         assertThat(gespeicherterKunde.getId()).isNotNull();
-        assertThat(gespeicherterKunde.getVorname()).isEqualTo("Christian");
-        assertThat(gespeicherterKunde.getNachname()).isEqualTo("Muellerke");
+        assertThat(gespeicherterKunde.getForename()).isEqualTo("Christian");
+        assertThat(gespeicherterKunde.getFamilyname()).isEqualTo("Muellerke");
 
-        Optional<KundeDTO> gelesenerKunde = kundenService.getKunde(gespeicherterKunde.getId());
+        Optional<CustomerDTO> gelesenerKunde = kundenService.find(gespeicherterKunde.getId());
         assertThat(gelesenerKunde).isNotEmpty();
         assertThat(gelesenerKunde.get().getId()).isEqualTo(gespeicherterKunde.getId());
 
         TenantContext.setTenantId(Testdata.TENANT_2);
-        Optional<KundeDTO> gelesenerKundeAndererTenant = kundenService.getKunde(gespeicherterKunde.getId());
+        Optional<CustomerDTO> gelesenerKundeAndererTenant = kundenService.find(gespeicherterKunde.getId());
         assertThat(gelesenerKundeAndererTenant).isEmpty();
     }
 
@@ -53,27 +55,27 @@ class KundenServiceIntegrationTest implements WithAssertions {
     void testKannEinenKundenAmTenant2_Speichern_UndDiesenDanachFinden() throws InterruptedException {
         TenantContext.setTenantId(Testdata.TENANT_2);
 
-        KundeDTO neuerKunde = KundeDTO.builder()
-                .vorname("Muelli") //
-                .nachname("Muellerke") //
+        CustomerDTO neuerKunde = CustomerDTO.builder()
+                .forename("Muelli") //
+                .familyname("Muellerke") //
                 .build();
 
-        KundeDTO gespeicherterKunde = kundenService.speichereKunde(neuerKunde);
+        CustomerDTO gespeicherterKunde = kundenService.save(neuerKunde);
 
         assertThat(gespeicherterKunde.getId()).isNotNull();
-        assertThat(gespeicherterKunde.getVorname()).isEqualTo("Muelli");
-        assertThat(gespeicherterKunde.getNachname()).isEqualTo("Muellerke");
+        assertThat(gespeicherterKunde.getForename()).isEqualTo("Muelli");
+        assertThat(gespeicherterKunde.getFamilyname()).isEqualTo("Muellerke");
 
         Thread.sleep(500);
         
         // suche nach diesem Kunden
-        List<KundeDTO> customersFound = customerSearchService.findByName("Muellerke");
+        List<CustomerDTO> customersFound = customerSearchService.findByName("Muellerke");
         assertThat(customersFound).isNotEmpty();
-        assertThat(customersFound.get(0).getNachname()).isEqualTo("Muellerke");
+        assertThat(customersFound.get(0).getFamilyname()).isEqualTo("Muellerke");
 
         // suche nach diesem Kunden, anderer Tenant
         TenantContext.setTenantId(Testdata.TENANT_3);
-        List<KundeDTO> customersFoundForTenant3 = customerSearchService.findByName("Muellerke");
+        List<CustomerDTO> customersFoundForTenant3 = customerSearchService.findByName("Muellerke");
         assertThat(customersFoundForTenant3).isEmpty();
     }
 

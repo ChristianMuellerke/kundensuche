@@ -3,30 +3,20 @@ package de.cmuellerke.poc.service;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.net.ssl.SSLContext;
-
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.assertj.core.api.WithAssertions;
-import org.assertj.core.util.Arrays;
 import org.awaitility.Awaitility;
 import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurationContext;
 import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurer;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
@@ -38,8 +28,8 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import de.cmuellerke.poc.payload.KundeDTO;
-import de.cmuellerke.poc.repository.KundenRepository;
+import de.cmuellerke.poc.payload.CustomerDTO;
+import de.cmuellerke.poc.repository.CustomerRepository;
 import de.cmuellerke.poc.tenancy.TenantContext;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @ActiveProfiles("test")
 @DirtiesContext
 @Slf4j
-class KundenServiceTest implements WithAssertions {
+class CustomerServiceIntegrationTest implements WithAssertions {
 
 	/*
 	 * Letzter Stand: ich wollte den Elastic Stack als Testcontainer laufen lassen.
@@ -76,13 +66,13 @@ class KundenServiceTest implements WithAssertions {
     	.withLogConsumer(new Slf4jLogConsumer(log));
 	
     @Autowired
-    private KundenService kundenService;
+    private CustomerService customerService;
 
     @Autowired
     private CustomerSearchService customerSearchService;
     
     @Autowired 
-    private KundenRepository kundenRepository;
+    private CustomerRepository customerRepository;
 
     @DynamicPropertySource
     static void setupProperties(DynamicPropertyRegistry registry) {
@@ -117,7 +107,7 @@ class KundenServiceTest implements WithAssertions {
 
 	@BeforeEach
 	void init() {
-		kundenRepository.deleteAll();
+		customerRepository.deleteAll();
 	}
 	
     @Test
@@ -127,43 +117,43 @@ class KundenServiceTest implements WithAssertions {
     }
     
     @Test
-    void testKannEinenKundenAmTenantSpeichern() {
+    void testCanSaveCustomerOnTenant() {
         TenantContext.setTenantId(Testdata.TENANT_1);
 
-        KundeDTO neuerKunde = KundeDTO.builder()
-                .vorname("Christian") //
-                .nachname("Muellerke") //
+        CustomerDTO newCustomer = CustomerDTO.builder()
+                .forename("Christian") //
+                .familyname("Muellerke") //
                 .build();
 
-        KundeDTO gespeicherterKunde = kundenService.speichereKunde(neuerKunde);
+        CustomerDTO savedCustomer = customerService.save(newCustomer);
 
-        assertThat(gespeicherterKunde.getId()).isNotNull();
-        assertThat(gespeicherterKunde.getVorname()).isEqualTo("Christian");
-        assertThat(gespeicherterKunde.getNachname()).isEqualTo("Muellerke");
+        assertThat(savedCustomer.getId()).isNotNull();
+        assertThat(savedCustomer.getForename()).isEqualTo("Christian");
+        assertThat(savedCustomer.getFamilyname()).isEqualTo("Muellerke");
 
-        Optional<KundeDTO> gelesenerKunde = kundenService.getKunde(gespeicherterKunde.getId());
-        assertThat(gelesenerKunde).isNotEmpty();
-        assertThat(gelesenerKunde.get().getId()).isEqualTo(gespeicherterKunde.getId());
+        Optional<CustomerDTO> foundCustomer = customerService.find(savedCustomer.getId());
+        assertThat(foundCustomer).isNotEmpty();
+        assertThat(foundCustomer.get().getId()).isEqualTo(savedCustomer.getId());
 
         TenantContext.setTenantId(Testdata.TENANT_2);
-        Optional<KundeDTO> gelesenerKundeAndererTenant = kundenService.getKunde(gespeicherterKunde.getId());
-        assertThat(gelesenerKundeAndererTenant).isEmpty();
+        Optional<CustomerDTO> savedCustomerOnOtherTenant = customerService.find(savedCustomer.getId());
+        assertThat(savedCustomerOnOtherTenant).isEmpty();
     }
 
     @Test
-    void testKannEinenKundenAmTenant2_Speichern_UndDiesenDanachFinden() throws InterruptedException {
+    void testCanSaveCustomerOnTenantAndCanSearchFor() throws InterruptedException {
         TenantContext.setTenantId(Testdata.TENANT_2);
 
-        KundeDTO neuerKunde = KundeDTO.builder()
-                .vorname("Muelli") //
-                .nachname("Muellerke") //
+        CustomerDTO newCustomer = CustomerDTO.builder()
+                .forename("Muelli") //
+                .familyname("Muellerke") //
                 .build();
 
-        KundeDTO gespeicherterKunde = kundenService.speichereKunde(neuerKunde);
+        CustomerDTO savedCustomer = customerService.save(newCustomer);
 
-        assertThat(gespeicherterKunde.getId()).isNotNull();
-        assertThat(gespeicherterKunde.getVorname()).isEqualTo("Muelli");
-        assertThat(gespeicherterKunde.getNachname()).isEqualTo("Muellerke");
+        assertThat(savedCustomer.getId()).isNotNull();
+        assertThat(savedCustomer.getForename()).isEqualTo("Muelli");
+        assertThat(savedCustomer.getFamilyname()).isEqualTo("Muellerke");
 
         // TODO: is there a better way? its asynchronously, but this is very ugly
         // maybe using awaitaily?
@@ -173,19 +163,44 @@ class KundenServiceTest implements WithAssertions {
         	return !customerSearchService.findByName("Muellerke").isEmpty();
         });
         
-        // suche nach diesem Kunden TODO: muss das in den await am besten mit rein?
-        List<KundeDTO> customersFound = customerSearchService.findByName("Muellerke");
+        // search for this customer TODO: muss das in den await am besten mit rein?
+        List<CustomerDTO> customersFound = customerSearchService.findByName("Muellerke");
         assertThat(customersFound).isNotEmpty();
-        assertThat(customersFound.get(0).getNachname()).isEqualTo("Muellerke");
+        assertThat(customersFound.get(0).getFamilyname()).isEqualTo("Muellerke");
         assertThat(customersFound.get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
         
 
-        // suche nach diesem Kunden, anderer Tenant
+        // search for this customer on other tenant
         TenantContext.setTenantId(Testdata.TENANT_3);
-        List<KundeDTO> customersFoundForTenant3 = customerSearchService.findByName("Muellerke");
+        List<CustomerDTO> customersFoundForTenant3 = customerSearchService.findByName("Muellerke");
         assertThat(customersFoundForTenant3).isEmpty();
     }
 
+    @Test
+    void testLoadingAndSearching() throws InterruptedException {
+    	TenantContext.setTenantId(Testdata.TENANT_2);
+    	List<Person> testPersonen = new Personengenerator().erzeugePersonen();
+
+    	List<CustomerDTO> customersToBeCreated = new ArrayList<CustomerDTO>();
+    	
+    	for (int i = 0; i < 5000; i++) {
+    		Person person = testPersonen.get(i);
+
+    		CustomerDTO newCustomer = CustomerDTO.builder()
+                    .forename(person.getVorname()) //
+                    .familyname(person.getNachname()) //
+                    .build();
+    		
+    		customersToBeCreated.add(newCustomer);
+    	}
+    	
+    	List<CustomerDTO> savedCustomers = customerService.save(customersToBeCreated);
+    	
+    	// now search TODO
+    	
+    }
+
+    
     /*
      * Weitere Testmethoden
      * 
@@ -193,7 +208,7 @@ class KundenServiceTest implements WithAssertions {
      * do a mass index on all
      * 
      * TODO: 
-     * refactor to english
+     * refactor to english    						-> done
      * evaluate tenants from outside
      * restart on tenant list changes?
      * search suggestion

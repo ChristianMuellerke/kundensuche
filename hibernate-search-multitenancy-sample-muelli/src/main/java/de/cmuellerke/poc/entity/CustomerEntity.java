@@ -19,7 +19,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class KundeEntity extends AbstractBaseEntity {
+public class CustomerEntity extends AbstractBaseEntity {
 
     @Id
     @Column(name = "customer_id", updatable = false, nullable = false)
@@ -29,11 +29,11 @@ public class KundeEntity extends AbstractBaseEntity {
     @NotBlank
     @Size(max = 40)
     @FullTextField
-    private String vorname;
+    private String forename;
 
     @NotBlank
     @Size(max = 40)
     @FullTextField
-    private String nachname;
+    private String familyname;
 
 }

@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class KundeDTO {
+public class CustomerDTO {
     private String id;
-    private String vorname;
-    private String nachname;
+    private String forename;
+    private String familyname;
     private String tenantId;
 }
