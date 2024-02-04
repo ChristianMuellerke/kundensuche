@@ -194,7 +194,6 @@ class CustomerServiceIntegrationTest implements WithAssertions {
         List<CustomerDTO> customersFoundForTenant3 = customerSearchService.findByName("Muellerke");
         assertThat(customersFoundForTenant3).isEmpty();
     }
-
     
     @Test
     void testLoadingAndSearching() throws InterruptedException {
@@ -219,7 +218,6 @@ class CustomerServiceIntegrationTest implements WithAssertions {
     	// now search TODO
     	
     }
-
     
     /*
      * Weitere Testmethoden
@@ -229,12 +227,13 @@ class CustomerServiceIntegrationTest implements WithAssertions {
      * 
      * TODO: 
      * refactor to english    						-> done
-     * evaluate tenants from outside
+     * evaluate tenants from outside                -> means, that tenant list is not statically in application.yaml
      * restart on tenant list changes?
      * search suggestion
-     * search-as-you-type
+     * search-as-you-type							-> done
      * implement web frontend
-     * paging!
+     * paging!?
+     * disable spring open in view					-> fone
      */
     
     

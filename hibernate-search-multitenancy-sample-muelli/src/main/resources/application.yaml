@@ -4,6 +4,7 @@ spring:
     username: devtest
     password: devtest
   jpa:
+    open-in-view: false
     properties:
       hibernate:
         format_sql: true
