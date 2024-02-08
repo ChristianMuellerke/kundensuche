@@ -1,6 +1,7 @@
 package de.cmuellerke.poc.service;
 
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -10,8 +11,16 @@ import java.util.Optional;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.assertj.core.api.WithAssertions;
 import org.awaitility.Awaitility;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.Response;
+import org.elasticsearch.client.RestClient;
+import org.hibernate.search.backend.elasticsearch.ElasticsearchBackend;
 import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurationContext;
 import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurer;
+import org.hibernate.search.engine.backend.common.DocumentReference;
+import org.hibernate.search.engine.search.query.SearchResult;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +37,16 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import de.cmuellerke.poc.entity.CustomerEntity;
 import de.cmuellerke.poc.payload.CustomerDTO;
+import de.cmuellerke.poc.payload.PageDTO;
+import de.cmuellerke.poc.payload.PageableSearchRequestDTO;
 import de.cmuellerke.poc.repository.CustomerRepository;
 import de.cmuellerke.poc.tenancy.TenantContext;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transaction;
 import lombok.extern.slf4j.Slf4j;
+
 
 @SpringBootTest
 @Testcontainers
@@ -74,6 +89,9 @@ class CustomerServiceIntegrationTest implements WithAssertions {
     @Autowired 
     private CustomerRepository customerRepository;
 
+    @Autowired
+    private EntityManager entityManager;
+    
     @DynamicPropertySource
     static void setupProperties(DynamicPropertyRegistry registry) {
     	log.info("Elastic is running under {}", elasticsearch.getHttpHostAddress());
@@ -216,25 +234,104 @@ class CustomerServiceIntegrationTest implements WithAssertions {
     	List<CustomerDTO> savedCustomers = customerService.save(customersToBeCreated);
     	
     	// now search TODO
-    	
     }
     
-    /*
-     * Weitere Testmethoden
-     * 
-     * insert 100 customers in every tenant
-     * do a mass index on all
-     * 
-     * TODO: 
-     * refactor to english    						-> done
-     * evaluate tenants from outside                -> means, that tenant list is not statically in application.yaml
-     * restart on tenant list changes?
-     * search suggestion
-     * search-as-you-type							-> done
-     * implement web frontend
-     * paging!?
-     * disable spring open in view					-> fone
-     */
     
+    @Test
+    void testPageableSearch() throws InterruptedException {
+        TenantContext.setTenantId(Testdata.TENANT_2);
+        customerService.save(Testdata.CUSTOMER_1);
+
+        Awaitility.await().atMost(Duration.of(200, ChronoUnit.SECONDS)).until(() -> {
+        	log.info("polling...");
+        	
+        	PageableSearchRequestDTO pageableSearchRequest = PageableSearchRequestDTO.builder()
+        			.forename("Muelli")
+        			.familyname(null)
+        			.fullname(null)
+        			.pageOffset(0)
+        			.limit(10)
+        			.build();
+
+        	PageDTO<CustomerDTO> resultPage = customerSearchService.findBy(pageableSearchRequest);
+        	
+        	if (!resultPage.getContent().isEmpty()) {
+        		assertThat(resultPage.getContent().get(0).getForename()).isEqualTo("Muelli");
+            	assertThat(resultPage.getContent().get(0).getFamilyname()).isEqualTo("Muellerke");
+            	assertThat(resultPage.getContent().get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
+            	assertThat(resultPage.getTotal()).isEqualTo(1);
+            	
+            	log.info("Customer ID={}/ DocumentId=NIL", resultPage.getContent().get(0).getId());
+
+            	return true;
+        	}
+            
+            return false;
+        });
+        
+        // now search by abbrevation
+    	PageableSearchRequestDTO pageableSearchRequest = PageableSearchRequestDTO.builder()
+    			.forename("Mue")
+    			.familyname(null)
+    			.fullname(null)
+    			.pageOffset(0)
+    			.limit(10)
+    			.build();
+        
+        PageDTO<CustomerDTO> resultPage = customerSearchService.findBy(pageableSearchRequest);
+
+        assertThat(resultPage.getContent()).isNotEmpty();
+        assertThat(resultPage.getContent().get(0).getForename()).isEqualTo("Muelli");
+    	assertThat(resultPage.getContent().get(0).getFamilyname()).isEqualTo("Muellerke");
+    	assertThat(resultPage.getContent().get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
+    	assertThat(resultPage.getTotal()).isEqualTo(1);
+
+    }
+
+	private void check() throws IOException {
+		ElasticsearchBackend elasticBackend = Search
+				.mapping(entityManager.getEntityManagerFactory())
+				.backend()
+				.unwrap(ElasticsearchBackend.class);
+		
+		RestClient restClient = elasticBackend.client(RestClient.class);
+		
+		Response response = restClient.performRequest( new Request( "GET", "/" ) );
+		assertThat( response.getStatusLine().getStatusCode() ).isEqualTo( 200 );
+		
+		
+		
+//        SearchSession searchSession = Search.session(entityManager);
+//        
+//        String tenantId = TenantContext.getTenantId();
+//
+//        log.info("{} Searching for ", tenantId);
+//
+//        /*
+//         * TODO
+//         * 
+//         * seems that we can`t search by prefix, eg. Muel does not find Muelli -> we have to investigate more here
+//         */
+//        
+//        SearchResult<CustomerEntity> searchResult = searchSession.search(CustomerEntity.class)
+//        		.where(f -> { 
+//        			return f.match().field("forename").matching("Muelli");
+//        		})
+//        		.fetchAll();
+//
+//        List<CustomerDTO> foundCustomerDTOs = searchResult.hits().stream().map(customerService::toCustomerDTO).toList();
+//
+//        SearchResult<DocumentReference> searchResult2 = searchSession.search(CustomerEntity.class)
+//        		.select(f -> f.documentReference())
+//        		.where(f -> { 
+//        			return f.match().field("forename").matching("Muelli");
+//        		})
+//        		.fetchAll();
+//
+//        log.info("Document Reference, id = {}", searchResult2.hits().get(0).id());
+//        log.info("{} end ", tenantId);
+//        
+//        searchSession.toEntityManager().getTransaction().commit();
+	}
     
 }

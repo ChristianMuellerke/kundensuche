@@ -104,6 +104,7 @@ public class CustomerService {
     public CustomerDTO toCustomerDTO(CustomerEntity customerEntity) {
         log.debug("{} Mapping CustomerEntity to DTO, TenantId from Entity is {}", TenantContext.getTenantId(), customerEntity.getTenantId());
 
+        
         return CustomerDTO.builder()
                 .forename(customerEntity.getForename()) 
                 .familyname(customerEntity.getFamilyname())
