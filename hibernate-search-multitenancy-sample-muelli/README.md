@@ -15,5 +15,5 @@
      * search suggestion
      * search-as-you-type                           -> done
      * implement a web frontend
-     * paging!?
+     * paging!?                                     -> done?
      * disable spring open in view                  -> done

@@ -17,11 +17,9 @@ import org.elasticsearch.client.RestClient;
 import org.hibernate.search.backend.elasticsearch.ElasticsearchBackend;
 import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurationContext;
 import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurer;
-import org.hibernate.search.engine.backend.common.DocumentReference;
-import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.mapper.orm.Search;
-import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,16 +35,18 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import de.cmuellerke.poc.entity.CustomerEntity;
 import de.cmuellerke.poc.payload.CustomerDTO;
 import de.cmuellerke.poc.payload.PageDTO;
 import de.cmuellerke.poc.payload.PageableSearchRequestDTO;
 import de.cmuellerke.poc.repository.CustomerRepository;
 import de.cmuellerke.poc.tenancy.TenantContext;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transaction;
 import lombok.extern.slf4j.Slf4j;
 
+/*
+ * https://localhost:32827/_cat/indices
+ * Username: elastic, Password: test
+ */
 
 @SpringBootTest
 @Testcontainers
@@ -54,27 +54,9 @@ import lombok.extern.slf4j.Slf4j;
 @DirtiesContext
 @Slf4j
 class CustomerServiceIntegrationTest implements WithAssertions {
-
-	/*
-	 * Letzter Stand: ich wollte den Elastic Stack als Testcontainer laufen lassen.
-	 * 
-	 * Der Container ist da und man kann auch mit ihm kommunizieren. Aber unser 
-	 * hibernate-search lässt sich momentan noch nicht auf den dynamischen Port mappen
-	 * 
-	 * 
-	 * https://localhost:32827/_cat/indices
-	 * 
-	 * Username: elastic, Password: test
-	 *
-	 * 
-	 * Zertifikatsgedöns:
-	 * 
-	 * https://github.com/testcontainers/testcontainers-java/blob/main/modules/elasticsearch/src/test/java/org/testcontainers/elasticsearch/ElasticsearchContainerTest.java#L315
-	 */
 	
     @Container
     static ElasticsearchContainer elasticsearch = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:8.11.4")//
-
     	.withPassword("test")
     	.waitingFor(new HttpWaitStrategy().forPort(9200).usingTls().allowInsecure().withBasicCredentials("elastic", "test"))
     	.withStartupTimeout(Duration.ofMinutes(5))
@@ -187,6 +169,7 @@ class CustomerServiceIntegrationTest implements WithAssertions {
     }
 
     @Test
+	@DisplayName("Supports SearchAsYouType for full names")
     void testSearchAsYouTypeByFullname() throws InterruptedException {
         TenantContext.setTenantId(Testdata.TENANT_2);
 
@@ -214,6 +197,7 @@ class CustomerServiceIntegrationTest implements WithAssertions {
     }
     
     @Test
+	@DisplayName("can save 5000 customers and search for them")
     void testLoadingAndSearching() throws InterruptedException {
     	TenantContext.setTenantId(Testdata.TENANT_2);
     	List<Person> testPersonen = new Personengenerator().erzeugePersonen();
@@ -233,11 +217,35 @@ class CustomerServiceIntegrationTest implements WithAssertions {
     	
     	List<CustomerDTO> savedCustomers = customerService.save(customersToBeCreated);
     	
-    	// now search TODO
+        Awaitility.await().atMost(Duration.of(200, ChronoUnit.SECONDS)).until(() -> {
+        	log.info("polling...");
+        	
+        	PageableSearchRequestDTO pageableSearchRequest = PageableSearchRequestDTO.builder()
+        			.forename(savedCustomers.get(0).getForename())
+        			.familyname(savedCustomers.get(0).getFamilyname())
+        			.fullname(null)
+        			.pageOffset(0)
+        			.limit(10)
+        			.build();
+
+        	PageDTO<CustomerDTO> resultPage = customerSearchService.findBy(pageableSearchRequest);
+        	
+        	if (!resultPage.getContent().isEmpty()) {
+        		assertThat(resultPage.getContent().get(0).getForename()).isEqualTo(savedCustomers.get(0).getForename());
+            	assertThat(resultPage.getContent().get(0).getFamilyname()).isEqualTo(savedCustomers.get(0).getFamilyname());
+            	assertThat(resultPage.getContent().get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
+            	
+            	log.info("Customer ID={}/ DocumentId=NIL", resultPage.getContent().get(0).getId());
+
+            	return true;
+        	}
+            
+            return false;
+        });
     }
     
-    
     @Test
+	@DisplayName("pageable search results work")
     void testPageableSearch() throws InterruptedException {
         TenantContext.setTenantId(Testdata.TENANT_2);
         customerService.save(Testdata.CUSTOMER_1);
@@ -298,40 +306,6 @@ class CustomerServiceIntegrationTest implements WithAssertions {
 		
 		Response response = restClient.performRequest( new Request( "GET", "/" ) );
 		assertThat( response.getStatusLine().getStatusCode() ).isEqualTo( 200 );
-		
-		
-		
-//        SearchSession searchSession = Search.session(entityManager);
-//        
-//        String tenantId = TenantContext.getTenantId();
-//
-//        log.info("{} Searching for ", tenantId);
-//
-//        /*
-//         * TODO
-//         * 
-//         * seems that we can`t search by prefix, eg. Muel does not find Muelli -> we have to investigate more here
-//         */
-//        
-//        SearchResult<CustomerEntity> searchResult = searchSession.search(CustomerEntity.class)
-//        		.where(f -> { 
-//        			return f.match().field("forename").matching("Muelli");
-//        		})
-//        		.fetchAll();
-//
-//        List<CustomerDTO> foundCustomerDTOs = searchResult.hits().stream().map(customerService::toCustomerDTO).toList();
-//
-//        SearchResult<DocumentReference> searchResult2 = searchSession.search(CustomerEntity.class)
-//        		.select(f -> f.documentReference())
-//        		.where(f -> { 
-//        			return f.match().field("forename").matching("Muelli");
-//        		})
-//        		.fetchAll();
-//
-//        log.info("Document Reference, id = {}", searchResult2.hits().get(0).id());
-//        log.info("{} end ", tenantId);
-//        
-//        searchSession.toEntityManager().getTransaction().commit();
 	}
     
 }
