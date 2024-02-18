@@ -1,7 +1,6 @@
 package de.cmuellerke.poc.service;
 
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -11,13 +10,8 @@ import java.util.Optional;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.assertj.core.api.WithAssertions;
 import org.awaitility.Awaitility;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClient;
-import org.hibernate.search.backend.elasticsearch.ElasticsearchBackend;
 import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurationContext;
 import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurer;
-import org.hibernate.search.mapper.orm.Search;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +32,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import de.cmuellerke.poc.payload.CustomerDTO;
 import de.cmuellerke.poc.payload.PageDTO;
 import de.cmuellerke.poc.payload.PageableSearchRequestDTO;
+import de.cmuellerke.poc.payload.TenantDTO;
 import de.cmuellerke.poc.repository.CustomerRepository;
+import de.cmuellerke.poc.repository.TenantRepository;
 import de.cmuellerke.poc.tenancy.TenantContext;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 @ActiveProfiles("test")
 @DirtiesContext
 @Slf4j
-class CustomerServiceIntegrationTest implements WithAssertions {
+class CustomerSearchServiceIntegrationTest implements WithAssertions {
 	
     @Container
     static ElasticsearchContainer elasticsearch = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:8.11.4")//
@@ -73,6 +69,13 @@ class CustomerServiceIntegrationTest implements WithAssertions {
 
     @Autowired
     private EntityManager entityManager;
+    
+    @Autowired 
+    private TenantService tenantService;
+
+    @Autowired 
+    private TenantRepository tenantRepository;
+
     
     @DynamicPropertySource
     static void setupProperties(DynamicPropertyRegistry registry) {
@@ -117,8 +120,9 @@ class CustomerServiceIntegrationTest implements WithAssertions {
     }
     
     @Test
+    @DisplayName("Customer is saved/loaded with a tenant context")
     void testCanSaveCustomerOnTenant() {
-        TenantContext.setTenantId(Testdata.TENANT_1);
+        TenantContext.setTenantId(Testdata.TENANT_1.getId());
 
         CustomerDTO newCustomer = Testdata.CUSTOMER_1;
         
@@ -132,14 +136,14 @@ class CustomerServiceIntegrationTest implements WithAssertions {
         assertThat(foundCustomer).isNotEmpty();
         assertThat(foundCustomer.get().getId()).isEqualTo(savedCustomer.getId());
 
-        TenantContext.setTenantId(Testdata.TENANT_2);
+        TenantContext.setTenantId(Testdata.TENANT_2.getId());
         Optional<CustomerDTO> savedCustomerOnOtherTenant = customerService.find(savedCustomer.getId());
         assertThat(savedCustomerOnOtherTenant).isEmpty();
     }
 
     @Test
     void testCanSaveCustomerOnTenantAndCanSearchFor() throws InterruptedException {
-        TenantContext.setTenantId(Testdata.TENANT_2);
+        TenantContext.setTenantId(Testdata.TENANT_2.getId());
 
         CustomerDTO newCustomer = Testdata.CUSTOMER_1;
         
@@ -155,7 +159,7 @@ class CustomerServiceIntegrationTest implements WithAssertions {
             List<CustomerDTO> customersFound = customerSearchService.findByName("Muellerke");
             if (!customersFound.isEmpty()) {
             	assertThat(customersFound.get(0).getFamilyname()).isEqualTo("Muellerke");
-            	assertThat(customersFound.get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
+            	assertThat(customersFound.get(0).getTenantId()).isEqualTo(Testdata.TENANT_2.getId());
             	return true;
             }
             
@@ -163,7 +167,7 @@ class CustomerServiceIntegrationTest implements WithAssertions {
         });
         
         // search for this customer on other tenant
-        TenantContext.setTenantId(Testdata.TENANT_3);
+        TenantContext.setTenantId(Testdata.TENANT_3.getId());
         List<CustomerDTO> customersFoundForTenant3 = customerSearchService.findByName("Muellerke");
         assertThat(customersFoundForTenant3).isEmpty();
     }
@@ -171,7 +175,8 @@ class CustomerServiceIntegrationTest implements WithAssertions {
     @Test
 	@DisplayName("Supports SearchAsYouType for full names")
     void testSearchAsYouTypeByFullname() throws InterruptedException {
-        TenantContext.setTenantId(Testdata.TENANT_2);
+    	TenantDTO testTenant = Testdata.TENANT_2;
+        TenantContext.setTenantId(testTenant.getId());
 
         CustomerDTO newCustomer = Testdata.CUSTOMER_1;
 
@@ -183,7 +188,7 @@ class CustomerServiceIntegrationTest implements WithAssertions {
             List<CustomerDTO> customersFound = customerSearchService.searchAsYouType("Muel");
             if (!customersFound.isEmpty()) {
             	assertThat(customersFound.get(0).getFamilyname()).isEqualTo("Muellerke");
-            	assertThat(customersFound.get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
+            	assertThat(customersFound.get(0).getTenantId()).isEqualTo(testTenant.getId());
             	return true;
             }
             
@@ -191,7 +196,7 @@ class CustomerServiceIntegrationTest implements WithAssertions {
         });
         
         // search for this customer on other tenant
-        TenantContext.setTenantId(Testdata.TENANT_3);
+        TenantContext.setTenantId(Testdata.TENANT_3.getId());
         List<CustomerDTO> customersFoundForTenant3 = customerSearchService.findByName("Muellerke");
         assertThat(customersFoundForTenant3).isEmpty();
     }
@@ -199,7 +204,8 @@ class CustomerServiceIntegrationTest implements WithAssertions {
     @Test
 	@DisplayName("can save 5000 customers and search for them")
     void testLoadingAndSearching() throws InterruptedException {
-    	TenantContext.setTenantId(Testdata.TENANT_2);
+    	TenantDTO testTenant = Testdata.TENANT_2;
+    	TenantContext.setTenantId(testTenant.getId());
     	List<Person> testPersonen = new Personengenerator().erzeugePersonen();
 
     	List<CustomerDTO> customersToBeCreated = new ArrayList<CustomerDTO>();
@@ -233,7 +239,7 @@ class CustomerServiceIntegrationTest implements WithAssertions {
         	if (!resultPage.getContent().isEmpty()) {
         		assertThat(resultPage.getContent().get(0).getForename()).isEqualTo(savedCustomers.get(0).getForename());
             	assertThat(resultPage.getContent().get(0).getFamilyname()).isEqualTo(savedCustomers.get(0).getFamilyname());
-            	assertThat(resultPage.getContent().get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
+            	assertThat(resultPage.getContent().get(0).getTenantId()).isEqualTo(testTenant.getId());
             	
             	log.info("Customer ID={}/ DocumentId=NIL", resultPage.getContent().get(0).getId());
 
@@ -247,7 +253,8 @@ class CustomerServiceIntegrationTest implements WithAssertions {
     @Test
 	@DisplayName("pageable search results work")
     void testPageableSearch() throws InterruptedException {
-        TenantContext.setTenantId(Testdata.TENANT_2);
+    	TenantDTO testTenant = Testdata.TENANT_2;
+        TenantContext.setTenantId(testTenant.getId());
         customerService.save(Testdata.CUSTOMER_1);
 
         Awaitility.await().atMost(Duration.of(200, ChronoUnit.SECONDS)).until(() -> {
@@ -266,7 +273,7 @@ class CustomerServiceIntegrationTest implements WithAssertions {
         	if (!resultPage.getContent().isEmpty()) {
         		assertThat(resultPage.getContent().get(0).getForename()).isEqualTo("Muelli");
             	assertThat(resultPage.getContent().get(0).getFamilyname()).isEqualTo("Muellerke");
-            	assertThat(resultPage.getContent().get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
+            	assertThat(resultPage.getContent().get(0).getTenantId()).isEqualTo(testTenant.getId());
             	assertThat(resultPage.getTotal()).isEqualTo(1);
             	
             	log.info("Customer ID={}/ DocumentId=NIL", resultPage.getContent().get(0).getId());
@@ -291,21 +298,49 @@ class CustomerServiceIntegrationTest implements WithAssertions {
         assertThat(resultPage.getContent()).isNotEmpty();
         assertThat(resultPage.getContent().get(0).getForename()).isEqualTo("Muelli");
     	assertThat(resultPage.getContent().get(0).getFamilyname()).isEqualTo("Muellerke");
-    	assertThat(resultPage.getContent().get(0).getTenantId()).isEqualTo(Testdata.TENANT_2);
+    	assertThat(resultPage.getContent().get(0).getTenantId()).isEqualTo(testTenant.getId());
     	assertThat(resultPage.getTotal()).isEqualTo(1);
 
     }
 
-	private void check() throws IOException {
-		ElasticsearchBackend elasticBackend = Search
-				.mapping(entityManager.getEntityManagerFactory())
-				.backend()
-				.unwrap(ElasticsearchBackend.class);
-		
-		RestClient restClient = elasticBackend.client(RestClient.class);
-		
-		Response response = restClient.performRequest( new Request( "GET", "/" ) );
-		assertThat( response.getStatusLine().getStatusCode() ).isEqualTo( 200 );
-	}
-    
+//	private void check() throws IOException {
+//		ElasticsearchBackend elasticBackend = Search
+//				.mapping(entityManager.getEntityManagerFactory())
+//				.backend()
+//				.unwrap(ElasticsearchBackend.class);
+//		
+//		RestClient restClient = elasticBackend.client(RestClient.class);
+//		
+//		Response response = restClient.performRequest( new Request( "GET", "/" ) );
+//		assertThat( response.getStatusLine().getStatusCode() ).isEqualTo( 200 );
+//	}
+
+	
+    @Test
+	@DisplayName("can save and get a tenant")
+    void tenantsCanBeSavedByTenantService() throws InterruptedException {
+    	// GIVEN
+    	TenantDTO testTenant = Testdata.TENANT_1;
+		// WHEN
+    	TenantDTO savedTenant = tenantService.createOrUpdate(testTenant);
+    	// THEN
+    	assertThat(savedTenant.getId()).isEqualTo(testTenant.getId());
+    	assertThat(savedTenant.getName()).isEqualTo(testTenant.getName());
+    }
+
+    @Test
+	@DisplayName("can save and then update a tenant")
+    void tenantsCanBeUpdatedByTenantService() throws InterruptedException {
+    	// GIVEN
+    	TenantDTO testTenant = Testdata.TENANT_2;
+    	TenantDTO savedTenant = tenantService.createOrUpdate(testTenant);
+    	assertThat(savedTenant.getName()).isEqualTo(testTenant.getName());
+		// WHEN
+    	savedTenant.setName("new name");
+    	TenantDTO updatedTenant = tenantService.createOrUpdate(savedTenant);
+    	// THEN
+    	assertThat(updatedTenant.getId()).isEqualTo(testTenant.getId());
+    	assertThat(updatedTenant.getName()).isEqualTo("new name");
+    }
+
 }

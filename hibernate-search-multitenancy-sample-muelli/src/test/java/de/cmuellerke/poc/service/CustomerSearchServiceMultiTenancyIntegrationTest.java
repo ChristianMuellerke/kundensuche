@@ -1,28 +1,18 @@
 package de.cmuellerke.poc.service;
 
 
-import java.io.IOException;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.assertj.core.api.WithAssertions;
-import org.awaitility.Awaitility;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClient;
-import org.hibernate.search.backend.elasticsearch.ElasticsearchBackend;
 import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurationContext;
 import org.hibernate.search.backend.elasticsearch.client.ElasticsearchHttpClientConfigurer;
-import org.hibernate.search.mapper.orm.Search;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -38,10 +28,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import de.cmuellerke.poc.payload.CustomerDTO;
-import de.cmuellerke.poc.payload.PageDTO;
-import de.cmuellerke.poc.payload.PageableSearchRequestDTO;
+import de.cmuellerke.poc.payload.TenantDTO;
 import de.cmuellerke.poc.repository.CustomerRepository;
-import de.cmuellerke.poc.tenancy.Tenant;
 import de.cmuellerke.poc.tenancy.TenantContext;
 import jakarta.persistence.EntityManager;
 import lombok.NonNull;
@@ -56,7 +44,8 @@ import lombok.extern.slf4j.Slf4j;
 @ActiveProfiles("test")
 @DirtiesContext
 @Slf4j
-@Disabled
+@Disabled	
+@DisplayName("Tests with many Tenants")
 class CustomerSearchServiceMultiTenancyIntegrationTest implements WithAssertions {
 	
 	final static int TENANT_COUNT = 500;
@@ -114,17 +103,17 @@ class CustomerSearchServiceMultiTenancyIntegrationTest implements WithAssertions
 	}
 
 	static String getTestTenantsAsCSV() {
-		List<Tenant> testTenants = getTestTenants();
+		List<TenantDTO> testTenants = getTestTenants();
 		List<@NonNull String> tenantIds = testTenants.stream().map(tenant -> tenant.getId()).toList();
 		String csv = String.join(",", tenantIds);
 		log.info("TestTenants: {}", csv);
 		return csv;
 	}
 	
-	static List<Tenant> getTestTenants() {
-		List<Tenant> tenants = new ArrayList<>();
+	static List<TenantDTO> getTestTenants() {
+		List<TenantDTO> tenants = new ArrayList<>();
     	for (int i = 0; i <= TENANT_COUNT; i++) {
-    		Tenant tenant = new Tenant("TestTenant_"+i);
+    		TenantDTO tenant = TenantDTO.builder().id("TestTenant_"+i).name("Test Tenant "+i).build();
     		tenants.add(tenant);
     	}
 		return tenants;
@@ -143,7 +132,7 @@ class CustomerSearchServiceMultiTenancyIntegrationTest implements WithAssertions
     
     @Test
     void canHandleManyTenants() throws InterruptedException {
-    	List<Tenant> testTenants = getTestTenants();
+    	List<TenantDTO> testTenants = getTestTenants();
     	
     	testTenants.forEach(tenant -> {
     		TenantContext.setTenantId(tenant.getId());

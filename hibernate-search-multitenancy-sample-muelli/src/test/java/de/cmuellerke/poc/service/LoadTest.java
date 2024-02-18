@@ -30,7 +30,7 @@ class LoadTest implements WithAssertions {
 
     @Test
     void testLoadingAndSearching() throws InterruptedException {
-    	TenantContext.setTenantId(Testdata.TENANT_2);
+    	TenantContext.setTenantId(Testdata.TENANT_2.getId());
     	List<Person> testPersonen = new Personengenerator().erzeugePersonen();
 
     	List<CustomerDTO> customersToBeCreated = new ArrayList<CustomerDTO>();

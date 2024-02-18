@@ -15,7 +15,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 import java.util.Optional;
 
-@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @ActiveProfiles(profiles = "test")
 @Disabled
@@ -29,7 +28,7 @@ class OldIntegrationTest implements WithAssertions {
 
     @Test
     void testKannEinenKundenAmTenantSpeichern() {
-        TenantContext.setTenantId(Testdata.TENANT_1);
+        TenantContext.setTenantId(Testdata.TENANT_1.getId());
 
         CustomerDTO neuerKunde = CustomerDTO.builder()
                 .forename("Christian") //
@@ -46,14 +45,14 @@ class OldIntegrationTest implements WithAssertions {
         assertThat(gelesenerKunde).isNotEmpty();
         assertThat(gelesenerKunde.get().getId()).isEqualTo(gespeicherterKunde.getId());
 
-        TenantContext.setTenantId(Testdata.TENANT_2);
+        TenantContext.setTenantId(Testdata.TENANT_2.getId());
         Optional<CustomerDTO> gelesenerKundeAndererTenant = kundenService.find(gespeicherterKunde.getId());
         assertThat(gelesenerKundeAndererTenant).isEmpty();
     }
 
     @Test
     void testKannEinenKundenAmTenant2_Speichern_UndDiesenDanachFinden() throws InterruptedException {
-        TenantContext.setTenantId(Testdata.TENANT_2);
+        TenantContext.setTenantId(Testdata.TENANT_2.getId());
 
         CustomerDTO neuerKunde = CustomerDTO.builder()
                 .forename("Muelli") //
@@ -74,7 +73,7 @@ class OldIntegrationTest implements WithAssertions {
         assertThat(customersFound.get(0).getFamilyname()).isEqualTo("Muellerke");
 
         // suche nach diesem Kunden, anderer Tenant
-        TenantContext.setTenantId(Testdata.TENANT_3);
+        TenantContext.setTenantId(Testdata.TENANT_3.getId());
         List<CustomerDTO> customersFoundForTenant3 = customerSearchService.findByName("Muellerke");
         assertThat(customersFoundForTenant3).isEmpty();
     }
