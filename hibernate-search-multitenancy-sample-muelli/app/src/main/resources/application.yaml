@@ -1,0 +1,47 @@
+spring:
+  datasource:
+    url: 'jdbc:postgresql://localhost:5432/demodb'
+    username: devtest
+    password: devtest
+  jpa:
+    open-in-view: false
+    show-sql: false
+    generate-ddl: true
+    properties:
+      javax:
+        persistence:
+          validation:
+            mode: none
+      hibernate:
+        format_sql: true
+        generate_statistics: false
+        order_inserts: true
+        jdbc:
+          batchsize: 100
+        tenant_identifier_resolver: 'de.cmuellerke.poc.tenancy.TenantIdentifierResolver'
+        search:
+          coordination:
+            strategy: outbox-polling
+          multi_tenancy:
+            tenant_ids: t1, t2, t3
+          schema_management:
+            strategy: drop-and-create
+          backend:
+            protocol: https
+            username: elastic
+            password: test
+            log:
+                '[json_pretty_printing]': true
+            analysis:
+                configurer: class:de.cmuellerke.poc.configuration.MyElasticsearchAnalysisConfigurer
+  main:
+    banner-mode: off
+    output:
+      ansi.enabled: true
+logging:
+  level.org.hibernate.SQL: INFO
+  level.org.hibernate.type.descriptor.sql.BasicBinder: INFO
+  level.de.cmuellerke.kundenverwaltung.configuration.AppConfig: TRACE
+  org.hibernate.search.elasticsearch.request: TRACE
+  org.hibernate.search.query: TRACE
+#  config: classpath:logback.xml
